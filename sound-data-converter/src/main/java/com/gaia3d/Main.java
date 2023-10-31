@@ -1,19 +1,32 @@
 package com.gaia3d;
 
+
+import com.gaia3d.soundDataConverter.SoundDataConverter;
+import org.apache.commons.cli.*;
+
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
-    public static void main(String[] args) {
-        // Press Alt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+    public static void main(String[] args) throws ParseException {
+        System.out.println("Start the program.");
+        Options options = new Options();
+        options.addOption("type", true, "conversion type");
+        options.addOption("input", true, "input folder path");
+        options.addOption("output", true, "output folder path");
 
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
+        CommandLineParser parser = new DefaultParser();
+        CommandLine commandLine = parser.parse(options, args);
 
-            // Press Shift+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
+        String type = commandLine.getOptionValue("type");
+
+        if(type == "SOUND_SIMULATION")
+        {
+            // Sound simulation data.************************************
+            String inputFolderPath = commandLine.getOptionValue("input");
+            String outputFolderPath = commandLine.getOptionValue("output");
+
+            SoundDataConverter soundDataConverter = new SoundDataConverter();
         }
+
     }
 }
