@@ -53,4 +53,9 @@ public class StringModifier
         }
 
     }
+
+    public static String getRawFileName(String fileName) {
+        String rawFileName = fileName.substring(0, fileName.lastIndexOf('.'));
+        return rawFileName;
+    }
 }

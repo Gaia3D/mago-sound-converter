@@ -26,6 +26,7 @@ public class Main {
             String outputFolderPath = commandLine.getOptionValue("output");
 
             SoundDataConverter soundDataConverter = new SoundDataConverter();
+            soundDataConverter.convertDataInFolder(inputFolderPath, outputFolderPath);
         }
 
     }
