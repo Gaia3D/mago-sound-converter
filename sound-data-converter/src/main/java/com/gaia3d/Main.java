@@ -27,6 +27,8 @@ public class Main {
 
             SoundDataConverter soundDataConverter = new SoundDataConverter();
             soundDataConverter.convertDataInFolder(inputFolderPath, outputFolderPath);
+
+            //soundDataConverter.testFunction();
         }
 
     }
