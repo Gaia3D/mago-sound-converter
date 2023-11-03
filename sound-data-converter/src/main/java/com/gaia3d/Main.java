@@ -3,6 +3,7 @@ package com.gaia3d;
 
 import com.gaia3d.soundDataConverter.SoundDataConverter;
 import org.apache.commons.cli.*;
+import org.locationtech.proj4j.CRSFactory;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
@@ -26,9 +27,16 @@ public class Main {
             String outputFolderPath = commandLine.getOptionValue("output");
 
             SoundDataConverter soundDataConverter = new SoundDataConverter();
-            soundDataConverter.convertDataInFolder(inputFolderPath, outputFolderPath);
 
-            //soundDataConverter.testFunction();
+            // set the coords of the inputData.***
+            CRSFactory factory = new CRSFactory();
+            // provisionally set the proj4 as 5186.***
+            String proj = "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs"; // 5186.***
+            if (proj != null && !proj.isEmpty()) {
+                soundDataConverter.inputCrs = factory.createFromParameters("CUSTOM", proj);
+            }
+
+            soundDataConverter.convertDataInFolder(inputFolderPath, outputFolderPath);
         }
 
     }

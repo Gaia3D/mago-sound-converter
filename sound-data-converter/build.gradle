@@ -15,7 +15,13 @@ dependencies {
 
     implementation("commons-cli:commons-cli:1.5.0")
 
+    implementation('com.fasterxml.jackson.core:jackson-databind:2.12.7.1')
+    implementation("com.fasterxml.jackson.core:jackson-core:2.15.0-rc2")
+
     implementation "org.joml:joml:1.10.5"
+
+    implementation "org.locationtech.proj4j:proj4j:1.2.3"
+    implementation "org.locationtech.proj4j:proj4j-epsg:1.2.3"
 }
 
 test {

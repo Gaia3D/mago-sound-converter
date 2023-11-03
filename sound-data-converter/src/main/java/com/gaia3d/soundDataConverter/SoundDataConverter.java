@@ -1,37 +1,24 @@
 package com.gaia3d.soundDataConverter;
 
+import com.gaia3d.dataStructure.DataType_Plan;
+import com.gaia3d.dataStructure.RectangleFace;
+import com.gaia3d.dataStructure.Vertex;
 import com.gaia3d.utils.StringModifier;
 import com.gaia3d.utils.io.LittleEndianDataInputStream;
 import com.gaia3d.utils.io.LittleEndianDataOutputStream;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SoundDataConverter
 {
+    public CoordinateReferenceSystem inputCrs = null;
     public SoundDataConverter()
     {
         System.out.println("SoundDataConverter constructor");
-    }
-
-    public void testFunction()
-    {
-        System.out.println("SoundDataConverter testFunction");
-        // save in a file, in binary, the double value 8.4
-        Path path = Paths.get("D:\\data\\simulation-data\\SOUND\\testOutput\\test.bin");
-        File file = path.toFile();
-
-        try (LittleEndianDataOutputStream stream = new LittleEndianDataOutputStream(new BufferedOutputStream(new FileOutputStream(file))))
-        {
-            stream.writeDouble(8.4);
-        }
-        catch (IOException ex)
-        {
-            throw new RuntimeException(ex);
-        }
     }
 
     public void convertDataInFolder(String inputFolderPath, String outputFolderPath)
@@ -47,15 +34,15 @@ public class SoundDataConverter
         for (int i = 0; i < filesCount; i++)
         {
             String fileName = vecFileNames.get(i);
-            String rawFileName = StringModifier.getRawFileName(fileName);
+            //String rawFileName = StringModifier.getRawFileName(fileName);
             System.out.println("fileName = " + fileName);
 
 
             String inputFilePath = inputFolderPath + "/" + fileName;
-            String outputFilePath = outputFolderPath + "/" + rawFileName + ".json";
+            //String outputFilePath = outputFolderPath + "/" + rawFileName + ".json";
             try
             {
-                convertData(inputFilePath, outputFilePath);
+                convertData(inputFilePath, outputFolderPath);
             }
             catch (FileNotFoundException e)
             {
@@ -64,7 +51,7 @@ public class SoundDataConverter
         }
     }
 
-    public void convertData(String inputFilePath, String outputFilePath) throws FileNotFoundException
+    public void convertData(String inputFilePath, String outputFolderPath) throws FileNotFoundException
     {
         System.out.println("SoundDataConverter convert");
         // the input file is binary.***
@@ -169,8 +156,11 @@ public class SoundDataConverter
                 {
                     case 21001:
                     case 21002:
-                    case 21004: {
-                        parseCase_4_1_1(stream);
+                    case 21004:
+                    {
+                        DataType_Plan resultDataTypePlan = new DataType_Plan();
+                        parseCase_4_1_1(stream, resultDataTypePlan);
+                        resultDataTypePlan.convertData(inputCrs);
                         break;
                     }
                     case 21003:
@@ -183,7 +173,8 @@ public class SoundDataConverter
                     case 22003:
                     case 22004:
                     case 22005:
-                    case 22006: {
+                    case 22006:
+                    {
                         parseCase_4_1_3(stream);
                         break;
                     }
@@ -214,28 +205,37 @@ public class SoundDataConverter
 
     }
 
-    private void parseCase_4_1_1(LittleEndianDataInputStream stream) throws IOException
+    private void parseCase_4_1_1(LittleEndianDataInputStream stream, DataType_Plan resultDataTypePlan) throws IOException
     {
-        int objNLv_Type = stream.readInt();
-        int num_Node = stream.readInt();
-        for (int j = 0; j < num_Node; j++)
+        resultDataTypePlan.objNLv_Type = stream.readInt();
+        resultDataTypePlan.num_Node = stream.readInt();
+        for (int j = 0; j < resultDataTypePlan.num_Node; j++)
         {
-            int Index = stream.readInt();
-            double x = stream.readDouble();
-            double y = stream.readDouble();
-            double z = stream.readDouble();
+            Vertex vertex = new Vertex();
+            vertex.index = stream.readInt();
+            vertex.x = stream.readDouble();
+            vertex.y = stream.readDouble();
+            vertex.z = stream.readDouble();
+
+            vertex.objNLv = new double[1];
             for(int k=0; k<1; k++)
             {
-                double objNLv = stream.readDouble();
+                vertex.objNLv[k] = stream.readDouble();
             }
+
+            resultDataTypePlan.vertexList.add(vertex);
         }
-        int num_Rect = stream.readInt();
-        for (int j = 0; j < num_Rect; j++)
+
+        resultDataTypePlan.num_Rect = stream.readInt();
+        for (int j = 0; j < resultDataTypePlan.num_Rect; j++)
         {
-            int node1 = stream.readInt();
-            int node2 = stream.readInt();
-            int node3 = stream.readInt();
-            int node4 = stream.readInt();
+            RectangleFace face = new RectangleFace();
+            face.index1 = stream.readInt();
+            face.index2 = stream.readInt();
+            face.index3 = stream.readInt();
+            face.index4 = stream.readInt();
+
+            resultDataTypePlan.faceList.add(face);
         }
     }
 
@@ -244,7 +244,7 @@ public class SoundDataConverter
         int num_building = stream.readInt();
         for (int i = 0; i < num_building; i++) {
             int Index = stream.readInt();
-            parseCase_4_1_1(stream);
+            //parseCase_4_1_1(stream);
             int hola = 0;
         }
     }
