@@ -2,6 +2,7 @@ package com.gaia3d;
 
 
 import com.gaia3d.soundDataConverter.SoundDataConverter;
+import com.gaia3d.utils.StringModifier;
 import org.apache.commons.cli.*;
 import org.locationtech.proj4j.CRSFactory;
 
@@ -36,7 +37,10 @@ public class Main {
                 soundDataConverter.inputCrs = factory.createFromParameters("CUSTOM", proj);
             }
 
+            StringModifier.createAllFoldersIfNoExist(outputFolderPath);
+
             soundDataConverter.convertDataInFolder(inputFolderPath, outputFolderPath);
+            soundDataConverter.writeJsonIndexFile(outputFolderPath);
         }
 
     }

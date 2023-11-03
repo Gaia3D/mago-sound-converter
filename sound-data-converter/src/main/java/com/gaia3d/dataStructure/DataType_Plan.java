@@ -1,5 +1,7 @@
 package com.gaia3d.dataStructure;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gaia3d.geometry.BoundingBox;
@@ -11,6 +13,8 @@ import org.joml.Vector4d;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.ProjCoordinate;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class DataType_Plan
@@ -18,8 +22,17 @@ public class DataType_Plan
     public int objNLv_Type;
     public int num_Node;
 
+    public String date;
+
+    public String fileName;
+
+    Vector3d centerGeoCoords; // (longitude, latitude, altitude).***
+
     public ArrayList<Vertex> vertexList;
     public ArrayList<Vector3d> positionsLC;
+
+    public double[] minSoundValue;
+    public double[] maxSoundValue;
 
     public int num_Rect;
     public ArrayList<RectangleFace> faceList;
@@ -53,26 +66,42 @@ public class DataType_Plan
             else
             vertex.z = resultWGS84.z;
 
-            // calculate the boundingBox.***
+            // calculate the boundingBox & minMaxSoundValues.***
+            int objNLvLength = vertex.objNLv.length;
+            double[] objNLv = vertex.objNLv; // object Noise Level.***
             if(i == 0)
             {
                 boundingBox.initBox(vertex.x, vertex.y, vertex.z);
+                minSoundValue = new double[objNLvLength];
+                maxSoundValue = new double[objNLvLength];
+                for (int j = 0; j < objNLvLength; j++)
+                {
+                    minSoundValue[j] = objNLv[j];
+                    maxSoundValue[j] = objNLv[j];
+                }
             }
             else
             {
                 boundingBox.addPoint(vertex.x, vertex.y, vertex.z);
+                for (int j = 0; j < objNLvLength; j++)
+                {
+                    if(objNLv[j] < minSoundValue[j])
+                        minSoundValue[j] = objNLv[j];
+                    if(objNLv[j] > maxSoundValue[j])
+                        maxSoundValue[j] = objNLv[j];
+                }
             }
 
             int hola = 0;
         }
 
         // Now, calculate the centerGeographicCoords = (centerLongitude, centerLatitude, centerAltitude).***
-        Vector3d centerGeoCoord = new Vector3d();
-        boundingBox.getCenterPosition(centerGeoCoord);
+        this.centerGeoCoords = new Vector3d();
+        boundingBox.getCenterPosition(centerGeoCoords);
 
         // calculate tMat at centerGeoCoords.***
         Vector3d centerPosWC = new Vector3d();
-        Globe.geographicToCartesianWGS84(Math.toRadians(centerGeoCoord.x), Math.toRadians(centerGeoCoord.y), centerGeoCoord.z, centerPosWC);
+        Globe.geographicToCartesianWGS84(Math.toRadians(centerGeoCoords.x), Math.toRadians(centerGeoCoords.y), centerGeoCoords.z, centerPosWC);
         Matrix4d tMat = new Matrix4d();
         Globe.transformMatrixAtCartesianPointWgs84(centerPosWC.x, centerPosWC.y, centerPosWC.z, tMat);
         Matrix4d tMatInv = new Matrix4d();
@@ -96,8 +125,7 @@ public class DataType_Plan
         int hola = 0;
     }
 
-    public void saveJson(String jsonFilePath)
-    {
+    public void writeToJsonFile(String jsonFilePath) throws IOException {
         // json sample:
 //        {
 //            "centerGeographicCoord": {
@@ -163,41 +191,46 @@ public class DataType_Plan
         ObjectNode objectNodeRoot = objectMapper.createObjectNode();
 
         ObjectNode objectNodeCenterGeographicCoord = objectMapper.createObjectNode();
-        objectNodeCenterGeographicCoord.put("altitude", 0.0);
-        objectNodeCenterGeographicCoord.put("latitude", 0.0);
-        objectNodeCenterGeographicCoord.put("longitude", 0.0);
+        objectNodeCenterGeographicCoord.put("altitude", this.centerGeoCoords.z);
+        objectNodeCenterGeographicCoord.put("latitude", this.centerGeoCoords.y);
+        objectNodeCenterGeographicCoord.put("longitude", this.centerGeoCoords.x);
         objectNodeRoot.set("centerGeographicCoord", objectNodeCenterGeographicCoord);
 
-        objectNodeRoot.put("date", "20220926");
-        objectNodeRoot.put("fileName", "M.OUT");
+        objectNodeRoot.put("date", this.date);
+        objectNodeRoot.put("fileName", this.fileName);
 
         int[] indices = new int[faceList.size() * 6];
+        int[] trianglesIndices = new int[2 * 3]; // 2 triangles X 3 Vertices.***
         for (int i = 0; i < faceList.size(); i++)
         {
-//            indices[i * 6 + 0] = faceList.get(i).vertexIndices[0];
-//            indices[i * 6 + 1] = faceList.get(i).vertexIndices[1];
-//            indices[i * 6 + 2] = faceList.get(i).vertexIndices[2];
-//            indices[i * 6 + 3] = faceList.get(i).vertexIndices[0];
-//            indices[i * 6 + 4] = faceList.get(i).vertexIndices[2];
-//            indices[i * 6 + 5] = faceList.get(i).vertexIndices[3];
+            RectangleFace face = faceList.get(i);
+            face.getTrianglesIndices(trianglesIndices);
+            indices[i * 6 + 0] = trianglesIndices[0];
+            indices[i * 6 + 1] = trianglesIndices[1];
+            indices[i * 6 + 2] = trianglesIndices[2];
+            indices[i * 6 + 3] = trianglesIndices[3];
+            indices[i * 6 + 4] = trianglesIndices[4];
+            indices[i * 6 + 5] = trianglesIndices[5];
+
         }
 
         objectNodeRoot.putPOJO("indices", indices);
 
-        objectNodeRoot.put("maxSoundValue", 0.0);
-        objectNodeRoot.put("minSoundValue", 0.0);
+        objectNodeRoot.put("maxSoundValue", this.maxSoundValue[0]);
+        objectNodeRoot.put("minSoundValue", this.minSoundValue[0]);
 
-        double[] positions = new double[vertexList.size() * 3];
-        for (int i = 0; i < vertexList.size(); i++)
+        double[] positions = new double[positionsLC.size() * 3];
+        for (int i = 0; i < positionsLC.size(); i++)
         {
-            positions[i * 3 + 0] = vertexList.get(i).x;
-            positions[i * 3 + 1] = vertexList.get(i).y;
-            positions[i * 3 + 2] = vertexList.get(i).z;
+            positions[i * 3 + 0] = positionsLC.get(i).x;
+            positions[i * 3 + 1] = positionsLC.get(i).y;
+            positions[i * 3 + 2] = positionsLC.get(i).z;
         }
 
         objectNodeRoot.putPOJO("positions", positions);
 
-
+        JsonNode jsonNode = new ObjectMapper().readTree(objectNodeRoot.toString());
+        objectMapper.writeValue(new File(jsonFilePath), jsonNode);
 
     }
 }

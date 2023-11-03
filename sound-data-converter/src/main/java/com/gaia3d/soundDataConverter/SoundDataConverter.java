@@ -1,5 +1,8 @@
 package com.gaia3d.soundDataConverter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gaia3d.dataStructure.DataType_Plan;
 import com.gaia3d.dataStructure.RectangleFace;
 import com.gaia3d.dataStructure.Vertex;
@@ -16,6 +19,8 @@ import java.util.ArrayList;
 public class SoundDataConverter
 {
     public CoordinateReferenceSystem inputCrs = null;
+
+    public ArrayList<String> vecJsonFileNames = new ArrayList<>();
     public SoundDataConverter()
     {
         System.out.println("SoundDataConverter constructor");
@@ -51,6 +56,62 @@ public class SoundDataConverter
         }
     }
 
+    public void writeJsonIndexFile(String outputFolderPath)
+    {
+        // json sample:
+//        {
+//            "date" : "20220926",
+//                "layers" : [
+//            {
+//                "timeInterval_min" : 1.0,
+//                    "timeSliceFileNames" : [ "M0.json" ],
+//                "timeSlicesCount" : 1
+//            },
+//            {
+//                "timeInterval_min" : 1.0,
+//                    "timeSliceFileNames" : [ "M1.json" ],
+//                "timeSlicesCount" : 1
+//            }
+//   ],
+//            "layersCount" : 1
+//        }
+        ArrayList<String> vecFileExtensions = new ArrayList<>();
+        vecFileExtensions.add("json");
+
+        // date.***
+        String date = "20230410"; // Hard coding.***
+
+        // layers count.***
+        int layersCount = vecJsonFileNames.size();
+
+
+        // layers.***
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode objectNodeRoot = objectMapper.createObjectNode();
+        objectNodeRoot.put("date", date);
+        objectNodeRoot.put("layersCount", layersCount);
+
+        ArrayNode layersArrayNode = objectMapper.createArrayNode();
+        for (int j = 0; j < layersCount; j++)
+        {
+            ObjectNode objectLayersNode = objectMapper.createObjectNode(); // original.***
+            objectLayersNode.put("timeInterval_min", 1.0); // Hard coding.***
+            objectLayersNode.put("altitude", 10.0); // Hard coding.***
+
+            ArrayNode timeSlicesArrayNode = objectMapper.createArrayNode();
+            for (int i = 0; i < layersCount; i++)
+            {
+                String fileName = vecJsonFileNames.get(i);
+                timeSlicesArrayNode.add(fileName);
+            }
+            objectLayersNode.put("timeSliceFileNames", timeSlicesArrayNode);
+            objectLayersNode.put("timeSlicesCount", layersCount);
+
+            layersArrayNode.add(objectLayersNode);
+        }
+
+    }
+
     public void convertData(String inputFilePath, String outputFolderPath) throws FileNotFoundException
     {
         System.out.println("SoundDataConverter convert");
@@ -58,6 +119,8 @@ public class SoundDataConverter
         // the output file is json.***
         Path inputPath = Paths.get(inputFilePath);
         File input = inputPath.toFile();
+
+        String fileName = input.getName();
 
         try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream(new BufferedInputStream(new FileInputStream(input))))
         {
@@ -159,8 +222,14 @@ public class SoundDataConverter
                     case 21004:
                     {
                         DataType_Plan resultDataTypePlan = new DataType_Plan();
+                        resultDataTypePlan.fileName = fileName;
                         parseCase_4_1_1(stream, resultDataTypePlan);
                         resultDataTypePlan.convertData(inputCrs);
+
+                        String jsonFileName = StringModifier.getRawFileName(fileName) + Integer.toString(i) + ".json";
+                        vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
+                        String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                        resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
                         break;
                     }
                     case 21003:
@@ -193,7 +262,7 @@ public class SoundDataConverter
                     case 29007:
                         break;
                     default:
-                        throw new RuntimeException("Itype = " + Itype);
+                        throw new RuntimeException("Itype = " + Itype + ", iteration = " + i);
                 }
             }
 

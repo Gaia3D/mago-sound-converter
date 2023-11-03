@@ -22,4 +22,14 @@ public class RectangleFace
         this.index3 = index3;
         this.index4 = index4;
     }
+
+    public void getTrianglesIndices(int[] indices)
+    {
+        indices[0] = index1;
+        indices[1] = index2;
+        indices[2] = index3;
+        indices[3] = index1;
+        indices[4] = index3;
+        indices[5] = index4;
+    }
 }

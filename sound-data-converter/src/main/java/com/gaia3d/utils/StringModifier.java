@@ -11,6 +11,15 @@ public class StringModifier
         return Optional.ofNullable(filename).filter(f -> f.contains(".")).map(f -> f.substring(filename.lastIndexOf(".") + 1));
     }
 
+    public static String getLastNameFromPath(String folderPath) {
+        String folderName = "";
+        int lastIndexOf = folderPath.lastIndexOf("\\");
+        if (lastIndexOf >= 0) {
+            folderName = folderPath.substring(lastIndexOf + 1);
+        }
+        return folderName;
+    }
+
     public static boolean checkStringCoincidences(String word, ArrayList<String> vecStrings, boolean bIgnoreCase) {
         int stringsCount = vecStrings.size();
         for (int i = 0; i < stringsCount; i++) {
@@ -57,5 +66,10 @@ public class StringModifier
     public static String getRawFileName(String fileName) {
         String rawFileName = fileName.substring(0, fileName.lastIndexOf('.'));
         return rawFileName;
+    }
+
+    public static boolean createAllFoldersIfNoExist(String filePath) {
+        File file = new File(filePath);
+        return file.mkdirs();
     }
 }
