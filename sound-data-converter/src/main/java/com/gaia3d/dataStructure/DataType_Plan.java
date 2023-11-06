@@ -145,9 +145,7 @@ public class DataType_Plan
             Globe.geographicToCartesianWGS84(Math.toRadians(vertex.x), Math.toRadians(vertex.y), vertex.z, cartesianWC);
             Vector3d cartesianLC = new Vector3d(0.0, 0.0, 0.0);
             tMatInv.transformPosition(cartesianWC, cartesianLC);
-
-            // test.***
-            cartesianLC.z += 2.0; // test.***
+            
             positionsLC.add(cartesianLC);
         }
 
