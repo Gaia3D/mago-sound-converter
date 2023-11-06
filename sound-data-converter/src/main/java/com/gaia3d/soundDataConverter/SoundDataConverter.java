@@ -81,7 +81,7 @@ public class SoundDataConverter
         //************************************************************
         // note : vecJsonFileNames is filled in convertData method.***
         //************************************************************
-        int layersCount = 1;
+        int layersCount = vecJsonFileNames.size();
 
 
         // layers.***
@@ -98,14 +98,10 @@ public class SoundDataConverter
             objectLayersNode.put("altitude", 10.0); // Hard coding.***
 
             ArrayNode timeSlicesArrayNode = objectMapper.createArrayNode();
-            int jsonFilesCount = vecJsonFileNames.size();
-            for (int i = 0; i < jsonFilesCount; i++)
-            {
-                String fileName = vecJsonFileNames.get(i);
-                timeSlicesArrayNode.add(fileName);
-            }
+            String fileName = vecJsonFileNames.get(j);
+            timeSlicesArrayNode.add(fileName);
             objectLayersNode.put("timeSliceFileNames", timeSlicesArrayNode);
-            objectLayersNode.put("timeSlicesCount", jsonFilesCount);
+            objectLayersNode.put("timeSlicesCount", 1);
 
             layersArrayNode.add(objectLayersNode);
         }
