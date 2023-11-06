@@ -6,6 +6,7 @@ group = 'com.gaia3d'
 version = '1.0-SNAPSHOT'
 
 repositories {
+    maven { url "https://repo.osgeo.org/repository/release/"}
     mavenCentral()
 }
 
@@ -19,6 +20,10 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.0-rc2")
 
     implementation "org.joml:joml:1.10.5"
+
+    //implementation 'org.geotools:gt-geojsondatastore:21.3'
+    //implementation "org.geotools:gt-referencing:21.3"
+    //implementation "org.geotools:gt-epsg-wkt:21.3"
 
     implementation "org.locationtech.proj4j:proj4j:1.2.3"
     implementation "org.locationtech.proj4j:proj4j-epsg:1.2.3"

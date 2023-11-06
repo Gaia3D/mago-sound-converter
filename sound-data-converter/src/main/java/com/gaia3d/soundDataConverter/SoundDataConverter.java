@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.gaia3d.dataStructure.DataType_Facade;
 import com.gaia3d.dataStructure.DataType_Plan;
 import com.gaia3d.dataStructure.RectangleFace;
 import com.gaia3d.dataStructure.Vertex;
@@ -12,6 +13,7 @@ import com.gaia3d.utils.StringModifier;
 import com.gaia3d.utils.io.LittleEndianDataInputStream;
 import com.gaia3d.utils.io.LittleEndianDataOutputStream;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.opengis.referencing.FactoryException;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -220,6 +222,10 @@ public class SoundDataConverter
             for (int i = 0; i < Ntype; i++)
             {
                 int Itype = stream.readInt();
+                if(i == 7)
+                {
+                    int hola = 0;
+                }
                 switch (Itype)
                 {
                     case 21001:
@@ -229,17 +235,31 @@ public class SoundDataConverter
                         DataType_Plan resultDataTypePlan = new DataType_Plan();
                         resultDataTypePlan.fileName = fileName;
                         parseCase_4_1_1(stream, resultDataTypePlan);
-                        resultDataTypePlan.convertData(inputCrs);
+                        if(resultDataTypePlan.num_Node > 0) {
+                            resultDataTypePlan.convertData(inputCrs);
 
-                        String jsonFileName = StringModifier.getRawFileName(fileName) + Integer.toString(i) + ".json";
-                        vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
-                        String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
-                        resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
+                            String jsonFileName = StringModifier.getRawFileName(fileName) + Integer.toString(i) + ".json";
+                            vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
+                            String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                            resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
+                        }
+                        else
+                        {
+                            System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                        }
                         break;
                     }
                     case 21003:
                     {
-                        parseCase_4_1_2(stream);
+                        DataType_Facade resultDataTypeFacade = new DataType_Facade();
+                        resultDataTypeFacade.fileName = fileName;
+                        parseCase_4_1_2(stream, resultDataTypeFacade);
+                        resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
+
+                        String jsonFileName = StringModifier.getRawFileName(fileName) + Integer.toString(i) + ".json";
+                        vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
+                        String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                        resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
                         break;
                     }
                     case 22001:
@@ -278,6 +298,8 @@ public class SoundDataConverter
         catch (IOException ex)
         {
             throw new RuntimeException(ex);
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -293,6 +315,11 @@ public class SoundDataConverter
             vertex.x = stream.readDouble();
             vertex.y = stream.readDouble();
             vertex.z = stream.readDouble();
+
+            if(vertex.z > 0.0)
+            {
+                int hola = 0;
+            }
 
             vertex.objNLv = new double[1];
             for(int k=0; k<1; k++)
@@ -316,12 +343,15 @@ public class SoundDataConverter
         }
     }
 
-    private void parseCase_4_1_2(LittleEndianDataInputStream stream) throws IOException
+    private void parseCase_4_1_2(LittleEndianDataInputStream stream, DataType_Facade resultDataTypeFacade) throws IOException
     {
         int num_building = stream.readInt();
         for (int i = 0; i < num_building; i++) {
             int Index = stream.readInt();
-            //parseCase_4_1_1(stream);
+            resultDataTypeFacade.buildingIndexList.add(Index);
+            DataType_Plan dataTypePlan = resultDataTypeFacade.newDataTypePlan();
+            dataTypePlan.buildingIndex = Index;
+            parseCase_4_1_1(stream, dataTypePlan);
             int hola = 0;
         }
     }

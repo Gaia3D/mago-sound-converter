@@ -12,6 +12,7 @@ import org.joml.Vector3d;
 import org.joml.Vector4d;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.ProjCoordinate;
+import org.opengis.referencing.FactoryException;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,8 @@ public class DataType_Plan
     public String date;
 
     public String fileName;
+
+    public int buildingIndex = -1; // this is for the facade.***
 
     Vector3d centerGeoCoords; // (longitude, latitude, altitude).***
 
@@ -45,8 +48,33 @@ public class DataType_Plan
         faceList = new ArrayList<RectangleFace>();
     }
 
-    public void convertData(CoordinateReferenceSystem inputCrs)
+    public void joinDataTypePlan(DataType_Plan dataTypePlan)
     {
+        int currVertexCount = this.vertexList.size();
+
+        // 1rst, join the vertexList.***
+        int vertexCount = dataTypePlan.vertexList.size();
+        for (int i = 0; i < vertexCount; i++)
+        {
+            Vertex vertex = dataTypePlan.vertexList.get(i);
+            vertexList.add(vertex);
+        }
+
+        // 2nd, join the faceList.***
+        int faceCount = dataTypePlan.faceList.size();
+        for (int i = 0; i < faceCount; i++)
+        {
+            RectangleFace face = dataTypePlan.faceList.get(i);
+            // must offset the indices.***
+            face.index1 += currVertexCount;
+            face.index2 += currVertexCount;
+            face.index3 += currVertexCount;
+            face.index4 += currVertexCount;
+            faceList.add(face);
+        }
+    }
+
+    public void convertData(CoordinateReferenceSystem inputCrs) throws FactoryException {
         // 1. convert vertex coords data to wgs84.***
         ProjCoordinate projCoordinate = new ProjCoordinate(0.0, 0.0, 0.0);
         ProjCoordinate resultWGS84 = new ProjCoordinate(0.0, 0.0, 0.0);
@@ -55,16 +83,14 @@ public class DataType_Plan
         for (int i = 0; i < vertexCount; i++)
         {
             Vertex vertex = vertexList.get(i);
-
             projCoordinate.setValue(vertex.x, vertex.y, vertex.z);
             CoordinatesUtils.transformToWGS84(inputCrs, projCoordinate, resultWGS84);
 
             vertex.x = resultWGS84.x;
             vertex.y = resultWGS84.y;
-            if(Double.isNaN(resultWGS84.z))
-                vertex.z = 0.0;
-            else
-            vertex.z = resultWGS84.z;
+            if(!Double.isNaN(resultWGS84.z))
+                vertex.z = resultWGS84.z;
+
 
             // calculate the boundingBox & minMaxSoundValues.***
             int objNLvLength = vertex.objNLv.length;
@@ -239,6 +265,11 @@ public class DataType_Plan
         }
 
         objectNodeRoot.putPOJO("indices", indices);
+
+        if(this.maxSoundValue == null)
+        {
+            int hola = 0;
+        }
 
         objectNodeRoot.put("maxSoundValue", this.maxSoundValue[0]);
         objectNodeRoot.put("minSoundValue", this.minSoundValue[0]);
