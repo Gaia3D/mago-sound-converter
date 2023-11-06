@@ -119,6 +119,9 @@ public class DataType_Plan
             Globe.geographicToCartesianWGS84(Math.toRadians(vertex.x), Math.toRadians(vertex.y), vertex.z, cartesianWC);
             Vector3d cartesianLC = new Vector3d(0.0, 0.0, 0.0);
             tMatInv.transformPosition(cartesianWC, cartesianLC);
+
+            // test.***
+            cartesianLC.z += 2.0; // test.***
             positionsLC.add(cartesianLC);
         }
 
@@ -184,7 +187,28 @@ public class DataType_Plan
 //                    -52.27165985107422,
 //                    184.6889343261719,
 //		...
-//	]
+//	],
+//   "soundLevelValues" : [
+//      45.12799835205078,
+//      55.89899826049805,
+//      55.53900146484375,
+//      51.24599838256836,
+//      55.31700134277344,
+//      54.86000061035156,
+//      47.84600067138672,
+//      56.28400039672852,
+//      55.69699859619141,
+//      50.16899871826172,
+//      55.65700149536133,
+//      56.49700164794922,
+//      44.49700164794922,
+//      54.33200073242188,
+//      53.78599929809570,
+//      54.61100006103516,
+//      54.34899902343750,
+//      55.06600189208984,
+//	  ...
+//	  ]
 //        }
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -228,6 +252,15 @@ public class DataType_Plan
         }
 
         objectNodeRoot.putPOJO("positions", positions);
+
+        double[] soundLevelValues = new double[vertexList.size()];
+        for (int i = 0; i < vertexList.size(); i++)
+        {
+            soundLevelValues[i] = vertexList.get(i).objNLv[0];
+        }
+
+        objectNodeRoot.putPOJO("soundLevelValues", soundLevelValues);
+
 
         JsonNode jsonNode = new ObjectMapper().readTree(objectNodeRoot.toString());
         objectMapper.writeValue(new File(jsonFilePath), jsonNode);

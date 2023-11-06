@@ -3,12 +3,14 @@ package com.gaia3d;
 import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest
 {
     @Test
-    void main() throws ParseException {
+    void main() throws ParseException, IOException {
         String inputFolderPath = "D:\\data\\simulation-data\\SOUND\\newSpecData\\M";
         String outputFolderPath = "D:\\data\\simulation-data\\SOUND\\newSpecData\\output";
 

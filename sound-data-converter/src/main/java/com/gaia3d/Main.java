@@ -6,10 +6,12 @@ import com.gaia3d.utils.StringModifier;
 import org.apache.commons.cli.*;
 import org.locationtech.proj4j.CRSFactory;
 
+import java.io.IOException;
+
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, IOException {
         System.out.println("Start the program.");
         Options options = new Options();
         options.addOption("type", true, "conversion type");

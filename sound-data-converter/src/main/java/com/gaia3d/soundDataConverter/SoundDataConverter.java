@@ -1,5 +1,7 @@
 package com.gaia3d.soundDataConverter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -56,33 +58,28 @@ public class SoundDataConverter
         }
     }
 
-    public void writeJsonIndexFile(String outputFolderPath)
-    {
+    public void writeJsonIndexFile(String outputFolderPath) throws IOException {
         // json sample:
 //        {
 //            "date" : "20220926",
 //                "layers" : [
 //            {
 //                "timeInterval_min" : 1.0,
-//                    "timeSliceFileNames" : [ "M0.json" ],
-//                "timeSlicesCount" : 1
-//            },
-//            {
-//                "timeInterval_min" : 1.0,
-//                    "timeSliceFileNames" : [ "M1.json" ],
-//                "timeSlicesCount" : 1
+//                    "timeSliceFileNames" : [ "M0.json", "M1.json" ],
+//                "timeSlicesCount" : 2
 //            }
 //   ],
 //            "layersCount" : 1
 //        }
-        ArrayList<String> vecFileExtensions = new ArrayList<>();
-        vecFileExtensions.add("json");
 
         // date.***
         String date = "20230410"; // Hard coding.***
 
         // layers count.***
-        int layersCount = vecJsonFileNames.size();
+        //************************************************************
+        // note : vecJsonFileNames is filled in convertData method.***
+        //************************************************************
+        int layersCount = 1;
 
 
         // layers.***
@@ -99,16 +96,24 @@ public class SoundDataConverter
             objectLayersNode.put("altitude", 10.0); // Hard coding.***
 
             ArrayNode timeSlicesArrayNode = objectMapper.createArrayNode();
-            for (int i = 0; i < layersCount; i++)
+            int jsonFilesCount = vecJsonFileNames.size();
+            for (int i = 0; i < jsonFilesCount; i++)
             {
                 String fileName = vecJsonFileNames.get(i);
                 timeSlicesArrayNode.add(fileName);
             }
             objectLayersNode.put("timeSliceFileNames", timeSlicesArrayNode);
-            objectLayersNode.put("timeSlicesCount", layersCount);
+            objectLayersNode.put("timeSlicesCount", jsonFilesCount);
 
             layersArrayNode.add(objectLayersNode);
         }
+
+        objectNodeRoot.put("layers", layersArrayNode);
+
+        JsonNode jsonNode = new ObjectMapper().readTree(objectNodeRoot.toString());
+        String jsonFileName = "JsonIndex.json";
+        String jsonFilePath = outputFolderPath + "\\" + jsonFileName;
+        objectMapper.writeValue(new File(jsonFilePath), jsonNode);
 
     }
 
@@ -261,8 +266,11 @@ public class SoundDataConverter
                     case 29006:
                     case 29007:
                         break;
-                    default:
-                        throw new RuntimeException("Itype = " + Itype + ", iteration = " + i);
+                    default: {
+                        System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                        //throw new RuntimeException("Itype = " + Itype + ", iteration = " + i);
+                        break;
+                    }
                 }
             }
 
