@@ -225,8 +225,6 @@ public class SoundDataConverter
                 switch (Itype)
                 {
                     case 21001:
-                    case 21002:
-                    case 21004:
                     {
                         DataType_Plan resultDataTypePlan = new DataType_Plan();
                         resultDataTypePlan.fileName = fileName;
@@ -234,7 +232,26 @@ public class SoundDataConverter
                         if(resultDataTypePlan.num_Node > 0) {
                             resultDataTypePlan.convertData(inputCrs);
 
-                            String jsonFileName = StringModifier.getRawFileName(fileName) + "_Plan_" + Integer.toString(i) + ".json";
+                            String jsonFileName = StringModifier.getRawFileName(fileName) + "_Plan_Day" + Integer.toString(i) + ".json";
+                            vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
+                            String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                            resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
+                        }
+                        else
+                        {
+                            System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                        }
+                        break;
+                    }
+                    case 21002:
+                    {
+                        DataType_Plan resultDataTypePlan = new DataType_Plan();
+                        resultDataTypePlan.fileName = fileName;
+                        parseCase_4_1_1(stream, resultDataTypePlan);
+                        if(resultDataTypePlan.num_Node > 0) {
+                            resultDataTypePlan.convertData(inputCrs);
+
+                            String jsonFileName = StringModifier.getRawFileName(fileName) + "_Plan_Night" + Integer.toString(i) + ".json";
                             vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
                             String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
                             resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
@@ -252,7 +269,20 @@ public class SoundDataConverter
                         parseCase_4_1_2(stream, resultDataTypeFacade);
                         resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
 
-                        String jsonFileName = StringModifier.getRawFileName(fileName) + "_Facade_" + Integer.toString(i) + ".json";
+                        String jsonFileName = StringModifier.getRawFileName(fileName) + "_Facade_Day" + Integer.toString(i) + ".json";
+                        vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
+                        String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                        resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
+                        break;
+                    }
+                    case 21004:
+                    {
+                        DataType_Facade resultDataTypeFacade = new DataType_Facade();
+                        resultDataTypeFacade.fileName = fileName;
+                        parseCase_4_1_2(stream, resultDataTypeFacade);
+                        resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
+
+                        String jsonFileName = StringModifier.getRawFileName(fileName) + "_Facade_Night" + Integer.toString(i) + ".json";
                         vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
                         String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
                         resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
