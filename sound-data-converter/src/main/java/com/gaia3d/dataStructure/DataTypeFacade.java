@@ -6,39 +6,39 @@ import org.locationtech.proj4j.CoordinateReferenceSystem;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class DataType_Facade
+public class DataTypeFacade
 {
-    int num_Building;
-    public ArrayList<DataType_Plan> dataTypePlanList;
-    public DataType_Plan totalDataTypePlan; // must join all dataTypePlanList to one dataTypePlan.***
+    int numBuilding;
+    public ArrayList<DataTypePlan> dataTypePlanList;
+    public DataTypePlan totalDataTypePlan; // must join all dataTypePlanList to one dataTypePlan.***
     public ArrayList<Integer> buildingIndexList;
 
     public String fileName;
 
-    public DataType_Facade()
+    public DataTypeFacade()
     {
-        num_Building = 0;
-        dataTypePlanList = new ArrayList<DataType_Plan>();
+        numBuilding = 0;
+        dataTypePlanList = new ArrayList<DataTypePlan>();
         buildingIndexList = new ArrayList<Integer>();
     }
 
-    public DataType_Plan newDataTypePlan()
+    public DataTypePlan newDataTypePlan()
     {
-        DataType_Plan dataTypePlan = new DataType_Plan();
+        DataTypePlan dataTypePlan = new DataTypePlan();
         dataTypePlanList.add(dataTypePlan);
         return dataTypePlan;
     }
 
     public void convertData(CoordinateReferenceSystem inputCrs) {
         // 1rst, join all dataTypePlanList to one dataTypePlan.***
-        this.totalDataTypePlan = new DataType_Plan();
+        this.totalDataTypePlan = new DataTypePlan();
 
         int totalvertexCount = 0;
 
         int dataTypePlanCount = dataTypePlanList.size();
         for (int i = 0; i < dataTypePlanCount; i++)
         {
-            DataType_Plan dataTypePlan = dataTypePlanList.get(i);
+            DataTypePlan dataTypePlan = dataTypePlanList.get(i);
             totalvertexCount += dataTypePlan.vertexList.size();
             totalDataTypePlan.joinDataTypePlan(dataTypePlan);
 

@@ -1,6 +1,5 @@
 package com.gaia3d.dataStructure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -9,7 +8,6 @@ import com.gaia3d.globe.Globe;
 import com.gaia3d.utils.CoordinatesUtils;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.joml.Vector4d;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.ProjCoordinate;
 //import org.opengis.referencing.FactoryException;
@@ -18,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class DataType_Plan
+public class DataTypePlan
 {
     public int objNLv_Type;
     public int num_Node;
@@ -40,7 +38,7 @@ public class DataType_Plan
     public int num_Rect;
     public ArrayList<RectangleFace> faceList;
 
-    public DataType_Plan()
+    public DataTypePlan()
     {
         objNLv_Type = 0;
         num_Node = 0;
@@ -48,7 +46,7 @@ public class DataType_Plan
         faceList = new ArrayList<RectangleFace>();
     }
 
-    public void joinDataTypePlan(DataType_Plan dataTypePlan)
+    public void joinDataTypePlan(DataTypePlan dataTypePlan)
     {
         int currVertexCount = this.vertexList.size();
 
