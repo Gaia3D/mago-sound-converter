@@ -13,17 +13,19 @@ import com.gaia3d.utils.StringModifier;
 import com.gaia3d.utils.io.LittleEndianDataInputStream;
 import com.gaia3d.utils.io.LittleEndianDataOutputStream;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
-import org.opengis.referencing.FactoryException;
+//import org.opengis.referencing.FactoryException;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SoundDataConverter
 {
     public CoordinateReferenceSystem inputCrs = null;
 
+    public HashMap<Integer, ArrayList<String>> iType_vecJsonFileNames = new HashMap<>();
     public ArrayList<String> vecJsonFileNames = new ArrayList<>();
     public SoundDataConverter()
     {
@@ -63,15 +65,26 @@ public class SoundDataConverter
     public void writeJsonIndexFile(String outputFolderPath) throws IOException {
         // json sample:
 //        {
-//            "date" : "20220926",
-//                "layers" : [
+//            "date": "20230410",
+//                "layersCount": 2,
+//                "layers": [
 //            {
-//                "timeInterval_min" : 1.0,
-//                    "timeSliceFileNames" : [ "M0.json", "M1.json" ],
-//                "timeSlicesCount" : 2
+//                "timeInterval_min": 1.0,
+//                    "altitude": 10.0,
+//                    "timeSliceFileNames": [
+//                "M_Plan_Day4.json", "M_Facade_Day6.json"
+//			],
+//                "timeSlicesCount": 1
+//            },
+//            {
+//                "timeInterval_min": 1.0,
+//                    "altitude": 10.0,
+//                    "timeSliceFileNames": [
+//                "M_Plan_Night5.json", "M_Facade_Night7.json"
+//			],
+//                "timeSlicesCount": 1
 //            }
-//   ],
-//            "layersCount" : 1
+//	]
 //        }
 
         // date.***
@@ -81,8 +94,15 @@ public class SoundDataConverter
         //************************************************************
         // note : vecJsonFileNames is filled in convertData method.***
         //************************************************************
-        int layersCount = vecJsonFileNames.size();
+        int layersCount = 2; // Day & Night.***
 
+        ArrayList<String> vecJsonFileNamesDay = new ArrayList<String>();
+        ArrayList<String> vecJsonFileNamesNight = new ArrayList<String>();
+        getJsonFileNamesByDayNight(vecJsonFileNamesDay, vecJsonFileNamesNight);
+
+        ArrayList<ArrayList> vecVecJsonFileNames = new ArrayList<>();
+        vecVecJsonFileNames.add(vecJsonFileNamesDay);
+        vecVecJsonFileNames.add(vecJsonFileNamesNight);
 
         // layers.***
         ObjectMapper objectMapper = new ObjectMapper();
@@ -94,14 +114,21 @@ public class SoundDataConverter
         for (int j = 0; j < layersCount; j++)
         {
             ObjectNode objectLayersNode = objectMapper.createObjectNode(); // original.***
-            objectLayersNode.put("timeInterval_min", 1.0); // Hard coding.***
-            objectLayersNode.put("altitude", 10.0); // Hard coding.***
+            //objectLayersNode.put("timeInterval_min", 1.0); // Hard coding.***
+            //objectLayersNode.put("altitude", 10.0); // Hard coding.***
 
             ArrayNode timeSlicesArrayNode = objectMapper.createArrayNode();
-            String fileName = vecJsonFileNames.get(j);
-            timeSlicesArrayNode.add(fileName);
+            ArrayList<String> vecJsonFileNames = vecVecJsonFileNames.get(j);
+            int slicesCount = vecJsonFileNames.size();
+            for(int k=0; k<slicesCount; k++)
+            {
+                String fileName = vecJsonFileNames.get(k);
+                timeSlicesArrayNode.add(fileName);
+            }
+            //String fileName = vecJsonFileNames.get(j);
+            //timeSlicesArrayNode.add(fileName);
             objectLayersNode.put("timeSliceFileNames", timeSlicesArrayNode);
-            objectLayersNode.put("timeSlicesCount", 1);
+            objectLayersNode.put("timeSlicesCount", slicesCount);
 
             layersArrayNode.add(objectLayersNode);
         }
@@ -113,6 +140,57 @@ public class SoundDataConverter
         String jsonFilePath = outputFolderPath + "\\" + jsonFileName;
         objectMapper.writeValue(new File(jsonFilePath), jsonNode);
 
+    }
+
+    public void getJsonFileNamesByDayNight(ArrayList<String> vecJsonFileNamesDay, ArrayList<String> vecJsonFileNamesNight)
+    {
+        int iType = 21001; // Day.***
+        if(iType_vecJsonFileNames.containsKey(iType))
+        {
+            ArrayList<String> vecJsonFileNames = iType_vecJsonFileNames.get(iType);
+            int vecJsonFileNamesCount = vecJsonFileNames.size();
+            for(int i=0; i<vecJsonFileNamesCount; i++)
+            {
+                String jsonFileName = vecJsonFileNames.get(i);
+                vecJsonFileNamesDay.add(jsonFileName);
+            }
+        }
+
+        iType = 21002; // Night.***
+        if(iType_vecJsonFileNames.containsKey(iType))
+        {
+            ArrayList<String> vecJsonFileNames = iType_vecJsonFileNames.get(iType);
+            int vecJsonFileNamesCount = vecJsonFileNames.size();
+            for(int i=0; i<vecJsonFileNamesCount; i++)
+            {
+                String jsonFileName = vecJsonFileNames.get(i);
+                vecJsonFileNamesNight.add(jsonFileName);
+            }
+        }
+
+        iType = 21003; // Day.***
+        if(iType_vecJsonFileNames.containsKey(iType))
+        {
+            ArrayList<String> vecJsonFileNames = iType_vecJsonFileNames.get(iType);
+            int vecJsonFileNamesCount = vecJsonFileNames.size();
+            for(int i=0; i<vecJsonFileNamesCount; i++)
+            {
+                String jsonFileName = vecJsonFileNames.get(i);
+                vecJsonFileNamesDay.add(jsonFileName);
+            }
+        }
+
+        iType = 21004; // Night.***
+        if(iType_vecJsonFileNames.containsKey(iType))
+        {
+            ArrayList<String> vecJsonFileNames = iType_vecJsonFileNames.get(iType);
+            int vecJsonFileNamesCount = vecJsonFileNames.size();
+            for(int i=0; i<vecJsonFileNamesCount; i++)
+            {
+                String jsonFileName = vecJsonFileNames.get(i);
+                vecJsonFileNamesNight.add(jsonFileName);
+            }
+        }
     }
 
     public void convertData(String inputFilePath, String outputFolderPath) throws FileNotFoundException
@@ -232,8 +310,19 @@ public class SoundDataConverter
                         if(resultDataTypePlan.num_Node > 0) {
                             resultDataTypePlan.convertData(inputCrs);
 
-                            String jsonFileName = StringModifier.getRawFileName(fileName) + "_Plan_Day" + Integer.toString(i) + ".json";
-                            vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
+                            String jsonFileName = "Type_2_Res_Plan_Day.json";
+                            if(iType_vecJsonFileNames.containsKey(Itype))
+                            {
+                                ArrayList<String> vecJsonFileNames = iType_vecJsonFileNames.get(Itype);
+                                vecJsonFileNames.add(jsonFileName);
+                            }
+                            else
+                            {
+                                ArrayList<String> vecJsonFileNames = new ArrayList<>();
+                                vecJsonFileNames.add(jsonFileName);
+                                iType_vecJsonFileNames.put(Itype, vecJsonFileNames);
+                            }
+
                             String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
                             resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
                         }
@@ -251,8 +340,19 @@ public class SoundDataConverter
                         if(resultDataTypePlan.num_Node > 0) {
                             resultDataTypePlan.convertData(inputCrs);
 
-                            String jsonFileName = StringModifier.getRawFileName(fileName) + "_Plan_Night" + Integer.toString(i) + ".json";
-                            vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
+                            String jsonFileName = "Type_2_Res_Plan_Night.json";
+                            if(iType_vecJsonFileNames.containsKey(Itype))
+                            {
+                                ArrayList<String> vecJsonFileNames = iType_vecJsonFileNames.get(Itype);
+                                vecJsonFileNames.add(jsonFileName);
+                            }
+                            else
+                            {
+                                ArrayList<String> vecJsonFileNames = new ArrayList<>();
+                                vecJsonFileNames.add(jsonFileName);
+                                iType_vecJsonFileNames.put(Itype, vecJsonFileNames);
+                            }
+
                             String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
                             resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
                         }
@@ -269,8 +369,19 @@ public class SoundDataConverter
                         parseCase_4_1_2(stream, resultDataTypeFacade);
                         resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
 
-                        String jsonFileName = StringModifier.getRawFileName(fileName) + "_Facade_Day" + Integer.toString(i) + ".json";
-                        vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
+                        String jsonFileName = "Type_2_Res_Facade_Day.json";
+                        if(iType_vecJsonFileNames.containsKey(Itype))
+                        {
+                            ArrayList<String> vecJsonFileNames = iType_vecJsonFileNames.get(Itype);
+                            vecJsonFileNames.add(jsonFileName);
+                        }
+                        else
+                        {
+                            ArrayList<String> vecJsonFileNames = new ArrayList<>();
+                            vecJsonFileNames.add(jsonFileName);
+                            iType_vecJsonFileNames.put(Itype, vecJsonFileNames);
+                        }
+
                         String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
                         resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
                         break;
@@ -282,8 +393,19 @@ public class SoundDataConverter
                         parseCase_4_1_2(stream, resultDataTypeFacade);
                         resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
 
-                        String jsonFileName = StringModifier.getRawFileName(fileName) + "_Facade_Night" + Integer.toString(i) + ".json";
-                        vecJsonFileNames.add(jsonFileName); // keep the jsonFileName.***
+                        String jsonFileName = "Type_2_Res_Facade_Night.json";
+                        if(iType_vecJsonFileNames.containsKey(Itype))
+                        {
+                            ArrayList<String> vecJsonFileNames = iType_vecJsonFileNames.get(Itype);
+                            vecJsonFileNames.add(jsonFileName);
+                        }
+                        else
+                        {
+                            ArrayList<String> vecJsonFileNames = new ArrayList<>();
+                            vecJsonFileNames.add(jsonFileName);
+                            iType_vecJsonFileNames.put(Itype, vecJsonFileNames);
+                        }
+
                         String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
                         resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
                         break;
@@ -324,8 +446,6 @@ public class SoundDataConverter
         catch (IOException ex)
         {
             throw new RuntimeException(ex);
-        } catch (FactoryException e) {
-            throw new RuntimeException(e);
         }
 
     }

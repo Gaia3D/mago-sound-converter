@@ -12,7 +12,7 @@ import org.joml.Vector3d;
 import org.joml.Vector4d;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.ProjCoordinate;
-import org.opengis.referencing.FactoryException;
+//import org.opengis.referencing.FactoryException;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,7 +74,7 @@ public class DataType_Plan
         }
     }
 
-    public void convertData(CoordinateReferenceSystem inputCrs) throws FactoryException {
+    public void convertData(CoordinateReferenceSystem inputCrs) {
         // 1. convert vertex coords data to wgs84.***
         ProjCoordinate projCoordinate = new ProjCoordinate(0.0, 0.0, 0.0);
         ProjCoordinate resultWGS84 = new ProjCoordinate(0.0, 0.0, 0.0);

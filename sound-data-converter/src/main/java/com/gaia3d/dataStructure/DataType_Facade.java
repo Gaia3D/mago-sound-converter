@@ -1,7 +1,7 @@
 package com.gaia3d.dataStructure;
 
 import org.locationtech.proj4j.CoordinateReferenceSystem;
-import org.opengis.referencing.FactoryException;
+//import org.opengis.referencing.FactoryException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class DataType_Facade
         return dataTypePlan;
     }
 
-    public void convertData(CoordinateReferenceSystem inputCrs) throws FactoryException {
+    public void convertData(CoordinateReferenceSystem inputCrs) {
         // 1rst, join all dataTypePlanList to one dataTypePlan.***
         this.totalDataTypePlan = new DataType_Plan();
 

@@ -1,16 +1,16 @@
 package com.gaia3d.utils;
 
-import org.geotools.referencing.CRS;
+//import org.geotools.referencing.CRS;
 import org.locationtech.proj4j.BasicCoordinateTransform;
 import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.ProjCoordinate;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.MathTransform;
+//import org.opengis.referencing.FactoryException;
+//import org.opengis.referencing.operation.MathTransform;
 
 public class CoordinatesUtils
 {
-    public static void transformToWGS84(CoordinateReferenceSystem source, ProjCoordinate coordinate, ProjCoordinate result) throws FactoryException {
+    public static void transformToWGS84(CoordinateReferenceSystem source, ProjCoordinate coordinate, ProjCoordinate result) {
         CRSFactory factory = new CRSFactory();
         CoordinateReferenceSystem wgs84 = factory.createFromParameters("WGS84", "+proj=longlat +datum=WGS84 +no_defs");
         BasicCoordinateTransform transformer = new BasicCoordinateTransform(source, wgs84);
