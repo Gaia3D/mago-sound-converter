@@ -8,37 +8,34 @@ import com.gaia3d.dataStructure.*;
 import com.gaia3d.utils.StringModifier;
 import com.gaia3d.utils.io.LittleEndianDataInputStream;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
-//import org.opengis.referencing.FactoryException;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-public class SoundDataConverter
-{
+public class SoundDataConverter {
     public CoordinateReferenceSystem inputCrs = null;
 
     public HashMap<Integer, ArrayList<String>> MapITypeVecJsonFileNames = new HashMap<>();
     public ArrayList<String> vecJsonFileNames = new ArrayList<>();
-    public SoundDataConverter()
-    {
+
+    public SoundDataConverter() {
         System.out.println("SoundDataConverter constructor");
     }
 
-    public void convertDataInFolder(String inputFolderPath, String outputFolderPath)
-    {
+    public void convertDataInFolder(String inputFolderPath, String outputFolderPath) {
         System.out.println("SoundDataConverter convert");
         // 1rst, find all files *.RBin in the input folder.***
-        ArrayList<String> vecFileExtensions = new ArrayList<>();
+        List<String> vecFileExtensions = new ArrayList<>();
         vecFileExtensions.add("RBin");
-        ArrayList<String> vecFileNames = new ArrayList<>();
+        List<String> vecFileNames = new ArrayList<>();
         StringModifier.getFileNamesInFolder(inputFolderPath, vecFileExtensions, vecFileNames);
 
         int filesCount = vecFileNames.size();
-        for (int i = 0; i < filesCount; i++)
-        {
+        for (int i = 0; i < filesCount; i++) {
             String fileName = vecFileNames.get(i);
             //String rawFileName = StringModifier.getRawFileName(fileName);
             System.out.println("fileName = " + fileName);
@@ -46,12 +43,9 @@ public class SoundDataConverter
 
             String inputFilePath = inputFolderPath + "/" + fileName;
             //String outputFilePath = outputFolderPath + "/" + rawFileName + ".json";
-            try
-            {
+            try {
                 convertData(inputFilePath, outputFolderPath);
-            }
-            catch (FileNotFoundException e)
-            {
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -91,11 +85,11 @@ public class SoundDataConverter
         //************************************************************
         int layersCount = 2; // Day & Night.***
 
-        ArrayList<String> vecJsonFileNamesDay = new ArrayList<String>();
-        ArrayList<String> vecJsonFileNamesNight = new ArrayList<String>();
+        List<String> vecJsonFileNamesDay = new ArrayList<String>();
+        List<String> vecJsonFileNamesNight = new ArrayList<String>();
         getJsonFileNamesByDayNight(vecJsonFileNamesDay, vecJsonFileNamesNight);
 
-        ArrayList<ArrayList> vecVecJsonFileNames = new ArrayList<>();
+        List<List<String>> vecVecJsonFileNames = new ArrayList<>();
         vecVecJsonFileNames.add(vecJsonFileNamesDay);
         vecVecJsonFileNames.add(vecJsonFileNamesNight);
 
@@ -106,26 +100,23 @@ public class SoundDataConverter
         objectNodeRoot.put("layersCount", layersCount);
 
         ArrayNode layersArrayNode = objectMapper.createArrayNode();
-        for (int j = 0; j < layersCount; j++)
-        {
+        for (int j = 0; j < layersCount; j++) {
             ObjectNode objectLayersNode = objectMapper.createObjectNode(); // original.***
 
             ArrayNode timeSlicesArrayNode = objectMapper.createArrayNode();
-            ArrayList<String> vecJsonFileNames = vecVecJsonFileNames.get(j);
+            List<String> vecJsonFileNames = vecVecJsonFileNames.get(j);
             int slicesCount = vecJsonFileNames.size();
-            for(int k=0; k<slicesCount; k++)
-            {
-                String fileName = vecJsonFileNames.get(k);
+            for (String fileName : vecJsonFileNames) {
                 timeSlicesArrayNode.add(fileName);
             }
 
-            objectLayersNode.put("timeSliceFileNames", timeSlicesArrayNode);
+            objectLayersNode.set("timeSliceFileNames", timeSlicesArrayNode);
             objectLayersNode.put("timeSlicesCount", slicesCount);
 
             layersArrayNode.add(objectLayersNode);
         }
 
-        objectNodeRoot.put("layers", layersArrayNode);
+        objectNodeRoot.set("layers", layersArrayNode);
 
         JsonNode jsonNode = new ObjectMapper().readTree(objectNodeRoot.toString());
         String jsonFileName = "JsonIndex.json";
@@ -134,59 +125,49 @@ public class SoundDataConverter
 
     }
 
-    public void getJsonFileNamesByDayNight(ArrayList<String> vecJsonFileNamesDay, ArrayList<String> vecJsonFileNamesNight)
-    {
+    public void getJsonFileNamesByDayNight(List<String> vecJsonFileNamesDay, List<String> vecJsonFileNamesNight) {
         int iType = 21001; // Day.***
-        if(MapITypeVecJsonFileNames.containsKey(iType))
-        {
-            ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(iType);
+        if (MapITypeVecJsonFileNames.containsKey(iType)) {
+            List<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(iType);
             int vecJsonFileNamesCount = vecJsonFileNames.size();
-            for(int i=0; i<vecJsonFileNamesCount; i++)
-            {
+            for (int i = 0; i < vecJsonFileNamesCount; i++) {
                 String jsonFileName = vecJsonFileNames.get(i);
                 vecJsonFileNamesDay.add(jsonFileName);
             }
         }
 
         iType = 21002; // Night.***
-        if(MapITypeVecJsonFileNames.containsKey(iType))
-        {
-            ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(iType);
+        if (MapITypeVecJsonFileNames.containsKey(iType)) {
+            List<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(iType);
             int vecJsonFileNamesCount = vecJsonFileNames.size();
-            for(int i=0; i<vecJsonFileNamesCount; i++)
-            {
+            for (int i = 0; i < vecJsonFileNamesCount; i++) {
                 String jsonFileName = vecJsonFileNames.get(i);
                 vecJsonFileNamesNight.add(jsonFileName);
             }
         }
 
         iType = 21003; // Day.***
-        if(MapITypeVecJsonFileNames.containsKey(iType))
-        {
-            ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(iType);
+        if (MapITypeVecJsonFileNames.containsKey(iType)) {
+            List<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(iType);
             int vecJsonFileNamesCount = vecJsonFileNames.size();
-            for(int i=0; i<vecJsonFileNamesCount; i++)
-            {
+            for (int i = 0; i < vecJsonFileNamesCount; i++) {
                 String jsonFileName = vecJsonFileNames.get(i);
                 vecJsonFileNamesDay.add(jsonFileName);
             }
         }
 
         iType = 21004; // Night.***
-        if(MapITypeVecJsonFileNames.containsKey(iType))
-        {
-            ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(iType);
+        if (MapITypeVecJsonFileNames.containsKey(iType)) {
+            List<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(iType);
             int vecJsonFileNamesCount = vecJsonFileNames.size();
-            for(int i=0; i<vecJsonFileNamesCount; i++)
-            {
+            for (int i = 0; i < vecJsonFileNamesCount; i++) {
                 String jsonFileName = vecJsonFileNames.get(i);
                 vecJsonFileNamesNight.add(jsonFileName);
             }
         }
     }
 
-    public void convertData(String inputFilePath, String outputFolderPath) throws FileNotFoundException
-    {
+    public void convertData(String inputFilePath, String outputFolderPath) throws FileNotFoundException {
         System.out.println("SoundDataConverter convert");
         // the input file is binary.***
         // the output file is json.***
@@ -195,8 +176,7 @@ public class SoundDataConverter
 
         String fileName = input.getName();
 
-        try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream(new BufferedInputStream(new FileInputStream(input))))
-        {
+        try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream(new BufferedInputStream(new FileInputStream(input)))) {
 //            1. 기본 자료형 정의
 //            유형 설명 길이(Byte수)
 //            int 정수형 4
@@ -285,31 +265,24 @@ public class SoundDataConverter
 
             int num_bytes_string = stream.readInt();
             int Ntype = stream.readInt();
-            for (int i = 0; i < Ntype; i++)
-            {
+            for (int i = 0; i < Ntype; i++) {
                 int Itype = stream.readInt();
-                if(i == 7)
-                {
+                if (i == 7) {
                     int hola = 0;
                 }
-                switch (Itype)
-                {
-                    case 21001:
-                    {
+                switch (Itype) {
+                    case 21001: {
                         DataTypePlan resultDataTypePlan = new DataTypePlan();
                         resultDataTypePlan.fileName = fileName;
                         parseCase_4_1_1(stream, resultDataTypePlan);
-                        if(resultDataTypePlan.num_Node > 0) {
+                        if (resultDataTypePlan.num_Node > 0) {
                             resultDataTypePlan.convertData(inputCrs);
 
                             String jsonFileName = "Type_2_Res_Plan_Day.json";
-                            if(MapITypeVecJsonFileNames.containsKey(Itype))
-                            {
+                            if (MapITypeVecJsonFileNames.containsKey(Itype)) {
                                 ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
                                 vecJsonFileNames.add(jsonFileName);
-                            }
-                            else
-                            {
+                            } else {
                                 ArrayList<String> vecJsonFileNames = new ArrayList<>();
                                 vecJsonFileNames.add(jsonFileName);
                                 MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
@@ -317,29 +290,23 @@ public class SoundDataConverter
 
                             String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
                             resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
-                        }
-                        else
-                        {
+                        } else {
                             System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
                         }
                         break;
                     }
-                    case 21002:
-                    {
+                    case 21002: {
                         DataTypePlan resultDataTypePlan = new DataTypePlan();
                         resultDataTypePlan.fileName = fileName;
                         parseCase_4_1_1(stream, resultDataTypePlan);
-                        if(resultDataTypePlan.num_Node > 0) {
+                        if (resultDataTypePlan.num_Node > 0) {
                             resultDataTypePlan.convertData(inputCrs);
 
                             String jsonFileName = "Type_2_Res_Plan_Night.json";
-                            if(MapITypeVecJsonFileNames.containsKey(Itype))
-                            {
+                            if (MapITypeVecJsonFileNames.containsKey(Itype)) {
                                 ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
                                 vecJsonFileNames.add(jsonFileName);
-                            }
-                            else
-                            {
+                            } else {
                                 ArrayList<String> vecJsonFileNames = new ArrayList<>();
                                 vecJsonFileNames.add(jsonFileName);
                                 MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
@@ -347,28 +314,22 @@ public class SoundDataConverter
 
                             String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
                             resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
-                        }
-                        else
-                        {
+                        } else {
                             System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
                         }
                         break;
                     }
-                    case 21003:
-                    {
+                    case 21003: {
                         DataTypeFacade resultDataTypeFacade = new DataTypeFacade();
                         resultDataTypeFacade.fileName = fileName;
                         parseCase_4_1_2(stream, resultDataTypeFacade);
                         resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
 
                         String jsonFileName = "Type_2_Res_Facade_Day.json";
-                        if(MapITypeVecJsonFileNames.containsKey(Itype))
-                        {
+                        if (MapITypeVecJsonFileNames.containsKey(Itype)) {
                             ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
                             vecJsonFileNames.add(jsonFileName);
-                        }
-                        else
-                        {
+                        } else {
                             ArrayList<String> vecJsonFileNames = new ArrayList<>();
                             vecJsonFileNames.add(jsonFileName);
                             MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
@@ -378,21 +339,17 @@ public class SoundDataConverter
                         resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
                         break;
                     }
-                    case 21004:
-                    {
+                    case 21004: {
                         DataTypeFacade resultDataTypeFacade = new DataTypeFacade();
                         resultDataTypeFacade.fileName = fileName;
                         parseCase_4_1_2(stream, resultDataTypeFacade);
                         resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
 
                         String jsonFileName = "Type_2_Res_Facade_Night.json";
-                        if(MapITypeVecJsonFileNames.containsKey(Itype))
-                        {
+                        if (MapITypeVecJsonFileNames.containsKey(Itype)) {
                             ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
                             vecJsonFileNames.add(jsonFileName);
-                        }
-                        else
-                        {
+                        } else {
                             ArrayList<String> vecJsonFileNames = new ArrayList<>();
                             vecJsonFileNames.add(jsonFileName);
                             MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
@@ -407,35 +364,21 @@ public class SoundDataConverter
                     case 22003:
                     case 22004:
                     case 22005:
-                    case 22006:
-                    {
+                    case 22006: {
                         String jsonFileName = "noName";
-                        if(Itype == 22001)
-                        {
+                        if (Itype == 22001) {
                             jsonFileName = "Type_2_Res_Stable_Facility_Ext_RD_Day.json";
-                        }
-                        else if(Itype == 22002)
-                        {
+                        } else if (Itype == 22002) {
                             jsonFileName = "Type_2_Res_Stable_Facility_Ext_RD_Night.json";
-                        }
-                        else if(Itype == 22003)
-                        {
+                        } else if (Itype == 22003) {
                             jsonFileName = "Type_2_Res_Stable_Facility_Ext_TN_Day.json";
-                        }
-                        else if(Itype == 22004)
-                        {
+                        } else if (Itype == 22004) {
                             jsonFileName = "Type_2_Res_Stable_Facility_Ext_TN_Night.json";
-                        }
-                        else if(Itype == 22005)
-                        {
+                        } else if (Itype == 22005) {
                             jsonFileName = "Type_2_Res_Stable_Facility_Int_RD_Day.json";
-                        }
-                        else if(Itype == 22006)
-                        {
+                        } else if (Itype == 22006) {
                             jsonFileName = "Type_2_Res_Stable_Facility_Int_RD_Night.json";
-                        }
-                        else
-                        {
+                        } else {
                             int hola = 0;
                         }
 
@@ -468,34 +411,28 @@ public class SoundDataConverter
                 }
             }
 
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
 
     }
 
-    private void parseCase_4_1_1(LittleEndianDataInputStream stream, DataTypePlan resultDataTypePlan) throws IOException
-    {
+    private void parseCase_4_1_1(LittleEndianDataInputStream stream, DataTypePlan resultDataTypePlan) throws IOException {
         resultDataTypePlan.objNLv_Type = stream.readInt();
         resultDataTypePlan.num_Node = stream.readInt();
-        for (int j = 0; j < resultDataTypePlan.num_Node; j++)
-        {
+        for (int j = 0; j < resultDataTypePlan.num_Node; j++) {
             Vertex vertex = new Vertex();
             vertex.index = stream.readInt();
             vertex.x = stream.readDouble();
             vertex.y = stream.readDouble();
             vertex.z = stream.readDouble();
 
-            if(vertex.z > 0.0)
-            {
+            if (vertex.z > 0.0) {
                 int hola = 0;
             }
 
             vertex.objNLv = new double[1];
-            for(int k=0; k<1; k++)
-            {
+            for (int k = 0; k < 1; k++) {
                 vertex.objNLv[k] = stream.readDouble();
             }
 
@@ -503,8 +440,7 @@ public class SoundDataConverter
         }
 
         resultDataTypePlan.num_Rect = stream.readInt();
-        for (int j = 0; j < resultDataTypePlan.num_Rect; j++)
-        {
+        for (int j = 0; j < resultDataTypePlan.num_Rect; j++) {
             RectangleFace face = new RectangleFace();
             face.index1 = stream.readInt();
             face.index2 = stream.readInt();
@@ -515,8 +451,7 @@ public class SoundDataConverter
         }
     }
 
-    private void parseCase_4_1_2(LittleEndianDataInputStream stream, DataTypeFacade resultDataTypeFacade) throws IOException
-    {
+    private void parseCase_4_1_2(LittleEndianDataInputStream stream, DataTypeFacade resultDataTypeFacade) throws IOException {
         int num_building = stream.readInt();
         for (int i = 0; i < num_building; i++) {
             int Index = stream.readInt();
@@ -529,21 +464,17 @@ public class SoundDataConverter
     }
 
 
-    private void parseCase_4_1_3(LittleEndianDataInputStream stream, DataTypeStableFacility resultDataTypeStableFacility) throws IOException
-    {
+    private void parseCase_4_1_3(LittleEndianDataInputStream stream, DataTypeStableFacility resultDataTypeStableFacility) throws IOException {
         resultDataTypeStableFacility.objNLvType = stream.readInt();
         resultDataTypeStableFacility.numBuilding = stream.readInt();
-        for (int i = 0; i < resultDataTypeStableFacility.numBuilding; i++)
-        {
+        for (int i = 0; i < resultDataTypeStableFacility.numBuilding; i++) {
             SubDataTypeStableFacility subDataTypeStableFacility = new SubDataTypeStableFacility();
             subDataTypeStableFacility.index = stream.readInt();
             subDataTypeStableFacility.numFloor = stream.readInt();
             subDataTypeStableFacility.height = stream.readDouble();
 
-            for (int j = 0; j < subDataTypeStableFacility.numFloor; j++)
-            {
-                for(int l=0; l<1; l++)
-                {
+            for (int j = 0; j < subDataTypeStableFacility.numFloor; j++) {
+                for (int l = 0; l < 1; l++) {
                     double objNLv = stream.readDouble();
                     subDataTypeStableFacility.objNLvList.add(objNLv);
                     int hola = 0;
