@@ -24,15 +24,13 @@ public class Main {
 
         String type = commandLine.getOptionValue("type");
 
-        if(type == "SOUND_SIMULATION")
-        {
+        if (type.equals("SOUND_SIMULATION")) {
             // Sound simulation data.************************************
             String inputFolderPath = commandLine.getOptionValue("input");
             String outputFolderPath = commandLine.getOptionValue("output");
             // check if exist the inputProj.***
             String inputProj = "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs"; // 5186.***
-            if(commandLine.hasOption("inputProj"))
-            {
+            if (commandLine.hasOption("inputProj")) {
                 inputProj = commandLine.getOptionValue("inputProj");
             }
 
@@ -51,6 +49,6 @@ public class Main {
             soundDataConverter.convertDataInFolder(inputFolderPath, outputFolderPath);
             soundDataConverter.writeJsonIndexFile(outputFolderPath);
         }
-
+        System.out.println("End the program.");
     }
 }
