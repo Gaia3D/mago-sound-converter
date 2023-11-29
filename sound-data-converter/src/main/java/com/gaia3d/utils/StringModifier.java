@@ -12,7 +12,7 @@ public class StringModifier {
 
     public static String getLastNameFromPath(String folderPath) {
         String folderName = "";
-        int lastIndexOf = folderPath.lastIndexOf("\\");
+        int lastIndexOf = folderPath.lastIndexOf(File.separator);
         if (lastIndexOf >= 0) {
             folderName = folderPath.substring(lastIndexOf + 1);
         }

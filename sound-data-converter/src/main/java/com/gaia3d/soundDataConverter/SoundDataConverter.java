@@ -120,7 +120,7 @@ public class SoundDataConverter {
 
         JsonNode jsonNode = new ObjectMapper().readTree(objectNodeRoot.toString());
         String jsonFileName = "JsonIndex.json";
-        String jsonFilePath = outputFolderPath + "\\" + jsonFileName;
+        String jsonFilePath = outputFolderPath  + File.separator +  jsonFileName;
         objectMapper.writeValue(new File(jsonFilePath), jsonNode);
 
     }
@@ -288,7 +288,7 @@ public class SoundDataConverter {
                                 MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
                             }
 
-                            String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                            String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
                             resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
                         } else {
                             System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
@@ -312,7 +312,7 @@ public class SoundDataConverter {
                                 MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
                             }
 
-                            String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                            String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
                             resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
                         } else {
                             System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
@@ -335,7 +335,7 @@ public class SoundDataConverter {
                             MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
                         }
 
-                        String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                        String outputJsonFilePath = outputFolderPath  + File.separator +  jsonFileName;
                         resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
                         break;
                     }
@@ -355,7 +355,7 @@ public class SoundDataConverter {
                             MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
                         }
 
-                        String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                        String outputJsonFilePath = outputFolderPath  + File.separator +  jsonFileName;
                         resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
                         break;
                     }
@@ -385,7 +385,7 @@ public class SoundDataConverter {
                         DataTypeStableFacility resultDataTypeStableFacility = new DataTypeStableFacility();
                         parseCase_4_1_3(stream, resultDataTypeStableFacility);
 
-                        String outputJsonFilePath = outputFolderPath + "\\" + jsonFileName;
+                        String outputJsonFilePath = outputFolderPath  + File.separator +  jsonFileName;
                         resultDataTypeStableFacility.writeToJsonFile(outputJsonFilePath);
                         break;
                     }
