@@ -1,2 +1,3 @@
 rootProject.name = 'sound-data-converter'
-
+include ':mago-common'
+project(':mago-common').projectDir = new File(settingsDir, '../common')
