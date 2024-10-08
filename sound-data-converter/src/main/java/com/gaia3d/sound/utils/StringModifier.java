@@ -1,11 +1,10 @@
 package com.gaia3d.sound.utils;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public class StringModifier
-{
+public class StringModifier {
     public static Optional<String> getExtensionByStringHandling(String filename) {
         // https://www.baeldung.com/java-file-extension
         return Optional.ofNullable(filename).filter(f -> f.contains(".")).map(f -> f.substring(filename.lastIndexOf(".") + 1));
@@ -13,14 +12,14 @@ public class StringModifier
 
     public static String getLastNameFromPath(String folderPath) {
         String folderName = "";
-        int lastIndexOf = folderPath.lastIndexOf("\\");
+        int lastIndexOf = folderPath.lastIndexOf(File.separator);
         if (lastIndexOf >= 0) {
             folderName = folderPath.substring(lastIndexOf + 1);
         }
         return folderName;
     }
 
-    public static boolean checkStringCoincidences(String word, ArrayList<String> vecStrings, boolean bIgnoreCase) {
+    public static boolean checkStringCoincidences(String word, List<String> vecStrings, boolean bIgnoreCase) {
         int stringsCount = vecStrings.size();
         for (int i = 0; i < stringsCount; i++) {
             if (bIgnoreCase) {
@@ -36,7 +35,8 @@ public class StringModifier
         }
         return false;
     }
-    public static void getFileNamesInFolder(String folderPath, ArrayList<String> vecFileExtensions, ArrayList<String> vecFileNames) {
+
+    public static void getFileNamesInFolder(String folderPath, List<String> vecFileExtensions, List<String> vecFileNames) {
         File folder = new File(folderPath);
 
         // Populates the array with names of files and directories
