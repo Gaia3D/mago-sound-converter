@@ -339,29 +339,10 @@ public class GaiaPrimitive extends PrimitiveStructure {
         Map<GaiaVertex, GaiaVertex> mapVertexToVertexMaster = new HashMap<>();
 
         int octreesWithContentsCount = octreesWithContents.size();
-        for(int i=0; i<octreesWithContentsCount; i++)
-        {
-            GaiaOctreeVertices octree = octreesWithContents.get(i);
+        for (GaiaOctreeVertices octree : octreesWithContents) {
             List<GaiaVertex> vertices = octree.getVertices();
             getWeldableVertexMap(mapVertexToVertexMaster, vertices, error, checkTexCoord, checkNormal, checkColor, checkBatchId);
 
-//            // check if in the map there are the same vertices.******************************************************
-//            int keysCount = vertexMap.size();
-//            int vertexCount = vertices.size();
-//            // loop vertexMap.***
-//            int vertexCountInMap = 0;
-//            for(List<GaiaVertex> vertexList : vertexMap.values())
-//            {
-//                vertexCountInMap += vertexList.size();
-//            }
-//
-//            if((vertexCountInMap + keysCount) != vertexCount)
-//            {
-//                int hola = 0;
-//            }
-//            // End check.--------------------------------------------------------------------------------------------
-//
-//            int hola = 0;
         }
 
         // make vertexMastersList.***
@@ -440,8 +421,6 @@ public class GaiaPrimitive extends PrimitiveStructure {
 
         this.vertices.clear();
         this.vertices = newVerticesArray;
-
-        int hola = 0;
     }
 
     private void getWeldableVertexMap(Map<GaiaVertex, GaiaVertex> mapVertexToVertexMaster, List<GaiaVertex> vertices, double error, boolean checkTexCoord, boolean checkNormal, boolean checkColor, boolean checkBatchId)

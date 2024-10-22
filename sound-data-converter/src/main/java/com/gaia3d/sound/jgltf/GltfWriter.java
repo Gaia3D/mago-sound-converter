@@ -128,8 +128,7 @@ public class GltfWriter {
     }
 
     private Byte convertNormal(Float normalValue) {
-        byte normalByte = (byte) (normalValue * 127);
-        return normalByte;
+        return (byte) (normalValue * 127);
     }
 
     private byte[] convertNormals(float[] normalValues) {

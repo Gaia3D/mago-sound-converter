@@ -103,11 +103,6 @@ public class HalfEdgeVertex {
             return resultHalfEdges;
         }
 
-        if(this.outingHalfEdge.getStatus() == ObjectStatus.DELETED)
-        {
-            int hola = 0;
-        }
-
         if(resultHalfEdges == null)
         {
             resultHalfEdges = new ArrayList<>();

@@ -2,6 +2,7 @@ package com.gaia3d.util;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 import java.util.stream.Collectors;
@@ -27,9 +28,7 @@ public class StringUtils {
         return featureTableText.toString();
     }
 
-
-
-    public static void splitString(String wordToSplit, String delimiter, Vector<String> resultSplittedStrings, boolean skipEmptyStrings) {
+    public static void splitString(String wordToSplit, String delimiter, List<String> resultSplittedStrings, boolean skipEmptyStrings) {
         String[] splitStrings = wordToSplit.split(delimiter);
         for (String word : splitStrings) {
             if (skipEmptyStrings) {

@@ -24,9 +24,6 @@ public class HalfEdgeSurface {
             HalfEdgeVertex startVertex = halfEdge.getStartVertex();
             HalfEdgeVertex endVertex = halfEdge.getEndVertex();
 
-            if (startVertex == endVertex) {
-                int hola = 0;
-            }
             List<HalfEdge> outingEdges = mapVertexOutingHEdges.computeIfAbsent(startVertex, k -> new ArrayList<>());
             outingEdges.add(halfEdge);
 
@@ -54,9 +51,6 @@ public class HalfEdgeSurface {
                 }
                 for (int k = 0; k < incomingEdgesCount; k++) {
                     HalfEdge incomingEdge = incomingEdges.get(k);
-                    if (outingEdge == incomingEdge) {
-                        int hola = 0;
-                    }
 
                     if (incomingEdge.hasTwin()) {
                         continue;
@@ -67,8 +61,6 @@ public class HalfEdgeSurface {
                 }
             }
         }
-
-        int hola = 0;
     }
 
     public boolean TEST_addRandomPositionToVertices() {
@@ -153,30 +145,19 @@ public class HalfEdgeSurface {
                 continue;
             }
 
-
-            //if(halfEdge.getSquaredLength() < minSquaredLength)
-            {
-                boolean testDebug = false;
-                if (i == 60610) {
-                    int hola = 0;
-                    testDebug = true;
-                }
-                if (collapseHalfEdge(halfEdge, i, testDebug)) {
-                    hedgesCollapsedCount++;
-                    counterAux++;
-                } else {
-                    int hola = 0;
-                }
-                //this.check(); // test debug.***
-
-                if (counterAux >= 2000) {
-                    counterAux = 0;
-                    log.info("halfEdges deleted = " + hedgesCollapsedCount);
-                }
+            boolean testDebug = false;
+            if (i == 60610) {
+                testDebug = true;
             }
-//            else {
-//                break;  // the halfEdges are ordered by squaredLength.***
-//            }
+            if (collapseHalfEdge(halfEdge, i, testDebug)) {
+                hedgesCollapsedCount++;
+                counterAux++;
+            }
+
+            if (counterAux >= 2000) {
+                counterAux = 0;
+                log.info("halfEdges deleted = " + hedgesCollapsedCount);
+            }
         }
 
         // delete objects that status is DELETED.***
@@ -213,11 +194,6 @@ public class HalfEdgeSurface {
             }
         }
 
-        // Finally check the halfEdges.***
-        if (!this.check()) {
-            int hola = 0;
-        }
-
         int finalFacesCount = faces.size();
         int finalHalfEdgesCount = halfEdges.size();
         int finalVerticesCount = vertices.size();
@@ -225,8 +201,6 @@ public class HalfEdgeSurface {
         int facesCountDiff = originalFacesCount - finalFacesCount;
         int halfEdgesCountDiff = originalHalfEdgesCount - finalHalfEdgesCount;
         int verticesCountDiff = originalVerticesCount - finalVerticesCount;
-
-        int hola = 0;
     }
 
     public Map getVertexAllOutingEdgesMap(Map<HalfEdgeVertex, List<HalfEdge>> vertexEdgesMap) {
@@ -237,12 +211,10 @@ public class HalfEdgeSurface {
 
         for (HalfEdge halfEdge : halfEdges) {
             if (halfEdge.getStatus() == ObjectStatus.DELETED) {
-                int hola = 0;
                 continue;
             }
             HalfEdgeVertex startVertex = halfEdge.getStartVertex();
             if (startVertex.getStatus() == ObjectStatus.DELETED) {
-                int hola = 0;
                 continue;
             }
             List<HalfEdge> edges = vertexEdgesMap.get(startVertex);
@@ -274,9 +246,6 @@ public class HalfEdgeSurface {
             HalfEdge hedge = halfEdges.get(i);
             if (hedge.getStatus() == ObjectStatus.DELETED) {
                 continue;
-            }
-            if (hedge.isDegenerated()) {
-                int hola = 0;
             }
         }
 
@@ -625,14 +594,6 @@ public class HalfEdgeSurface {
         HalfEdgeFace deletingFace = halfEdge.getFace();
         HalfEdgeFace deletingTwinFace = twin.getFace();
 
-        if (deletingVertex == endVertex) {
-            int hola = 0;
-        }
-
-        if (endVertex.getStatus() == ObjectStatus.DELETED) {
-            int hola = 0;
-        }
-
         //*********************************************************************************
         // 1- Delete the 2 faces, the 2 halfEdges, the 2 halfEdgesLoop, the startVertex.***
         //*********************************************************************************
@@ -673,10 +634,6 @@ public class HalfEdgeSurface {
             counterAux++;
         }
 
-        if (endVertex.getStatus() == ObjectStatus.DELETED) {
-            int hola = 0;
-        }
-
         // Side B.***************************************************************************
         for (HalfEdge deletingTwinHalfEdge : deletingTwinHalfEdgesLoop) {
             deletingTwinHalfEdge.setStatus(ObjectStatus.DELETED);
@@ -698,55 +655,27 @@ public class HalfEdgeSurface {
             //deletingTwinHalfEdge.setNext(null);
         }
 
-        if (endVertex.getStatus() == ObjectStatus.DELETED) {
-            int hola = 0;
-        }
-
-
         // delete the 2 halfEdges.***
         halfEdge.untwin();
         halfEdge.setStatus(ObjectStatus.DELETED);
         twin.untwin();
         twin.setStatus(ObjectStatus.DELETED);
 
-        if (endVertex.getStatus() == ObjectStatus.DELETED) {
-            int hola = 0;
-        }
-
         // delete the startVertex.***
         deletingVertex.setStatus(ObjectStatus.DELETED);
         //deletingVertex.deleteObjects();
         deletingVertex.note = "deleted-in-collapseHalfEdge";
 
-        if (endVertex.getStatus() == ObjectStatus.DELETED) {
-            int hola = 0;
-        }
-
         //**************************************************************************************
         // 2- Set the endVertex to halfEdges that lost the startVertex.***
         //**************************************************************************************
-
-//        Map<HalfEdgeVertex, List<HalfEdge>> vertexAllOutingEdgesMap = new HashMap<>();
-//        vertexAllOutingEdgesMap = getVertexAllOutingEdgesMap(vertexAllOutingEdgesMap);
-//        List<HalfEdge> outingEdges = vertexAllOutingEdgesMap.get(deletingVertex);
-
 
         if (outingEdgesOfDeletingVertex != null) {
             for (HalfEdge outingEdge : outingEdgesOfDeletingVertex) {
                 if (outingEdge.getStatus() == ObjectStatus.DELETED) {
                     continue;
                 }
-                if (endVertex.getStatus() == ObjectStatus.DELETED) {
-                    int hola = 0;
-                }
-
-                if (outingEdge.isDegenerated()) {
-                    int hola = 0;
-                }
                 outingEdge.setStartVertex(endVertex);
-                if (outingEdge.isDegenerated()) {
-                    int hola = 0;
-                }
                 outingEdge.note = "Reasigned StartVertex-in-collapseHalfEdge";
                 endVertex.setOutingHalfEdge(outingEdge);
             }
@@ -764,9 +693,6 @@ public class HalfEdgeSurface {
         int halfEdgesCount = halfEdges.size();
         for (int i = 0; i < halfEdgesCount; i++) {
             HalfEdge halfEdge = halfEdges.get(i);
-            if (halfEdge == null) {
-                int hola = 0;
-            }
             if (halfEdge.getStatus() == ObjectStatus.DELETED || halfEdge.hasTwin()) {
                 continue;
             }

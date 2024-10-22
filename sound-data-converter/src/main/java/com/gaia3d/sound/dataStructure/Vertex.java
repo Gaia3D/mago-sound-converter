@@ -7,9 +7,7 @@ public class Vertex {
     public double x;
     public double y;
     public double z;
-
     public int index;
-
     public double[] objNLv; // 소음레벨 배열 [dB(A)]
 
     public Vertex() {

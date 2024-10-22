@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 @Slf4j
@@ -56,8 +58,8 @@ public class Globe {
         transformMatrix.set(xAxis.x, xAxis.y, xAxis.z, 0.0, yAxis.x, yAxis.y, yAxis.z, 0.0, zAxis.x, zAxis.y, zAxis.z, 0.0, x, y, z, 1.0);
     }
 
-    public static Vector<Double> geographicDegree2DArrayToCartesianWGS84Array(Vector<Double> vecGeoCoordsDeg2D) {
-        Vector<Double> vecCartesianWgs84Array = new Vector<>();
+    public static List<Double> geographicDegree2DArrayToCartesianWGS84Array(List<Double> vecGeoCoordsDeg2D) {
+        List<Double> vecCartesianWgs84Array = new ArrayList<>();
 
         int pointsCount = vecGeoCoordsDeg2D.size() / 2;
         Double altitude = 0.0;
@@ -99,6 +101,5 @@ public class Globe {
         resultCartesian.x = (v + h) * cosLat * cosLon;
         resultCartesian.y = (v + h) * cosLat * sinLon;
         resultCartesian.z = (v * (1.0 - e2) + h) * sinLat;
-
     }
 }

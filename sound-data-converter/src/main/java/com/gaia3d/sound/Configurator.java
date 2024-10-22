@@ -25,7 +25,7 @@ import java.nio.file.StandardCopyOption;
  */
 public class Configurator {
     public static final Level LEVEL = Level.ALL;
-    private static final String DEFAULT_PATTERN = "%message%n";
+    private static final String DEFAULT_PATTERN = "[%d{HH:mm:ss}][%-5level] %message%n";
 
     public static void initConsoleLogger() {
         initConsoleLogger(null);

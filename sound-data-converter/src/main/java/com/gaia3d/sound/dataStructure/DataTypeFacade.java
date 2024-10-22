@@ -30,21 +30,11 @@ public class DataTypeFacade {
         // 1rst, join all dataTypePlanList to one dataTypePlan.***
         this.totalDataTypePlan = new DataTypePlan();
 
-        int totalvertexCount = 0;
-
-        int dataTypePlanCount = dataTypePlanList.size();
-        for (int i = 0; i < dataTypePlanCount; i++) {
-            DataTypePlan dataTypePlan = dataTypePlanList.get(i);
-            totalvertexCount += dataTypePlan.vertexList.size();
+        for (DataTypePlan dataTypePlan : dataTypePlanList) {
             totalDataTypePlan.joinDataTypePlan(dataTypePlan);
-
         }
-
         // now convert data.***
         totalDataTypePlan.convertData(inputCrs);
-
-        int hola = 0;
-
     }
 
     public void writeToGlbFile(String gltfFilePath) throws IOException {

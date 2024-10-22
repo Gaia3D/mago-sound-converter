@@ -38,8 +38,7 @@ public class SoundDataConverter {
         StringModifier.getFileNamesInFolder(inputFolderPath, vecFileExtensions, vecFileNames);
 
         int filesCount = vecFileNames.size();
-        for (int i = 0; i < filesCount; i++) {
-            String fileName = vecFileNames.get(i);
+        for (String fileName : vecFileNames) {
             //String rawFileName = StringModifier.getRawFileName(fileName);
             log.info("fileName = " + fileName);
 
@@ -49,7 +48,7 @@ public class SoundDataConverter {
             try {
                 convertData(inputFilePath, outputFolderPath);
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                log.error("", e);
             }
         }
     }
@@ -266,13 +265,9 @@ public class SoundDataConverter {
 //            Ÿ Type_2_Res_Facade_Night //야간 Facade 소음 해석결과
 //            - 5 -
 
-            int num_bytes_string = stream.readInt();
             int Ntype = stream.readInt();
             for (int i = 0; i < Ntype; i++) {
                 int Itype = stream.readInt();
-                if (i == 7) {
-                    int hola = 0;
-                }
                 switch (Itype) {
                     case 21001: {
                         DataTypePlan resultDataTypePlan = new DataTypePlan();
@@ -296,7 +291,7 @@ public class SoundDataConverter {
 
                             // GLB.************************************************************
                             String glbFileName = "Type_2_Res_Plan_Day.glb";
-                            String outputGltfFilePath = outputFolderPath + "\\" + glbFileName;
+                            String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
                             resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
                             // End Glb.--------------------------------------------------------
                         } else {
@@ -326,7 +321,7 @@ public class SoundDataConverter {
 
                             // GLB.************************************************************
                             String glbFileName = "Type_2_Res_Plan_Night.glb";
-                            String outputGltfFilePath = outputFolderPath + "\\" + glbFileName;
+                            String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
                             resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
                             // End Glb.--------------------------------------------------------
                         } else {
@@ -355,7 +350,7 @@ public class SoundDataConverter {
 
                         // GLB.************************************************************
                         String glbFileName = "Type_2_Res_Facade_Day.glb";
-                        String outputGltfFilePath = outputFolderPath + "\\" + glbFileName;
+                        String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
                         resultDataTypeFacade.writeToGlbFile(outputGltfFilePath); // new.***
                         // End Glb.--------------------------------------------------------
                         break;
@@ -381,7 +376,7 @@ public class SoundDataConverter {
 
                         // GLB.************************************************************
                         String glbFileName = "Type_2_Res_Facade_Night.glb";
-                        String outputGltfFilePath = outputFolderPath + "\\" + glbFileName;
+                        String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
                         resultDataTypeFacade.writeToGlbFile(outputGltfFilePath); // new.***
                         // End Glb.--------------------------------------------------------
 
@@ -406,8 +401,6 @@ public class SoundDataConverter {
                             jsonFileName = "Type_2_Res_Stable_Facility_Int_RD_Day.json";
                         } else if (Itype == 22006) {
                             jsonFileName = "Type_2_Res_Stable_Facility_Int_RD_Night.json";
-                        } else {
-                            int hola = 0;
                         }
 
                         DataTypeStableFacility resultDataTypeStableFacility = new DataTypeStableFacility();
@@ -455,10 +448,6 @@ public class SoundDataConverter {
             vertex.y = stream.readDouble();
             vertex.z = stream.readDouble();
 
-            if (vertex.z > 0.0) {
-                int hola = 0;
-            }
-
             vertex.objNLv = new double[1];
             for (int k = 0; k < 1; k++) {
                 vertex.objNLv[k] = stream.readDouble();
@@ -487,7 +476,6 @@ public class SoundDataConverter {
             DataTypePlan dataTypePlan = resultDataTypeFacade.newDataTypePlan();
             dataTypePlan.buildingIndex = Index;
             parseCase_4_1_1(stream, dataTypePlan);
-            int hola = 0;
         }
     }
 
@@ -505,7 +493,6 @@ public class SoundDataConverter {
                 for (int l = 0; l < 1; l++) {
                     double objNLv = stream.readDouble();
                     subDataTypeStableFacility.objNLvList.add(objNLv);
-                    int hola = 0;
                 }
             }
 

@@ -16,6 +16,7 @@ public class Main {
     public static void main(String[] args) throws ParseException, IOException {
         Configurator.initConsoleLogger();
 
+        printStartMessage();
         log.info("Start the program.");
         Options options = new Options();
         options.addOption("type", true, "conversion type");
@@ -52,9 +53,21 @@ public class Main {
 
             soundDataConverter.convertDataInFolder(inputFolderPath, outputFolderPath);
             soundDataConverter.writeJsonIndexFile(outputFolderPath);
+        } else if (type.equals("RADIO_WAVE")) {
+            log.error("RADIO_WAVE Conversion type is not supported yet.");
         } else {
             log.error("Conversion type is not supported.");
         }
-        log.info("End the program.");
+        printEndMessage();
+    }
+
+    public static void printStartMessage() {
+        log.info("=========================START==========================");
+        log.info("Sound Data Converter : Gaia3D, Inc.");
+        log.info("========================================================");
+    }
+
+    public static void printEndMessage() {
+        log.info("==========================END===========================");
     }
 }

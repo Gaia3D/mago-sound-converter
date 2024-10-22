@@ -21,13 +21,13 @@ public class StringModifier {
 
     public static boolean checkStringCoincidences(String word, List<String> vecStrings, boolean bIgnoreCase) {
         int stringsCount = vecStrings.size();
-        for (int i = 0; i < stringsCount; i++) {
+        for (String vecString : vecStrings) {
             if (bIgnoreCase) {
-                if (word.equalsIgnoreCase(vecStrings.get(i))) {
+                if (word.equalsIgnoreCase(vecString)) {
                     return true;
                 }
             } else {
-                if (word.equals(vecStrings.get(i))) {
+                if (word.equals(vecString)) {
                     return true;
 
                 }
@@ -44,9 +44,7 @@ public class StringModifier {
         File[] listOfFiles = folder.listFiles();
         int filesCount = listOfFiles.length;
         boolean bIgnoreCase = true; // ignore char upperCase & lowerCase.***
-        for (int i = 0; i < filesCount; i++) {
-            File file = listOfFiles[i];
-
+        for (File file : listOfFiles) {
             // check if is a file or folder.***
             if (file.isFile()) {
                 /* is a file.*** */
@@ -65,8 +63,7 @@ public class StringModifier {
     }
 
     public static String getRawFileName(String fileName) {
-        String rawFileName = fileName.substring(0, fileName.lastIndexOf('.'));
-        return rawFileName;
+        return fileName.substring(0, fileName.lastIndexOf('.'));
     }
 
     public static boolean createAllFoldersIfNoExist(String filePath) {

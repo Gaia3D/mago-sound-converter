@@ -26,8 +26,7 @@ public class DataTypeStableFacility {
         objectNodeRoot.put("numBuilding", this.numBuilding);
 
         ArrayNode arrayNodeSubDataTypeStableFacility = objectMapper.createArrayNode();
-        for (int i = 0; i < subDataTypeStableFacilityArray.size(); i++) {
-            SubDataTypeStableFacility subDataTypeStableFacility = subDataTypeStableFacilityArray.get(i);
+        for (SubDataTypeStableFacility subDataTypeStableFacility : subDataTypeStableFacilityArray) {
             ObjectNode objectNodeSubDataTypeStableFacility = objectMapper.createObjectNode();
             objectNodeSubDataTypeStableFacility.put("index", subDataTypeStableFacility.index);
             objectNodeSubDataTypeStableFacility.put("numFloor", subDataTypeStableFacility.numFloor);

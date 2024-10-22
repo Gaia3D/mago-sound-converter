@@ -104,8 +104,6 @@ public class DataTypePlan {
                     if (objNLv[j] > maxSoundValue[j]) maxSoundValue[j] = objNLv[j];
                 }
             }
-
-            int hola = 0;
         }
 
         // Now, calculate the centerGeographicCoords = (centerLongitude, centerLatitude, centerAltitude).***
@@ -133,8 +131,6 @@ public class DataTypePlan {
 
             positionsLC.add(cartesianLC);
         }
-
-        int hola = 0;
     }
 
     public Vector4d getColorByNoiseLevel(double noiseLevel) {
@@ -142,23 +138,23 @@ public class DataTypePlan {
 
         if (noiseLevel >= 150) {
             color.set(227.0 / 255.0, 39.0 / 255.0, 27.0 / 255.0, 1.0);
-        } else if (noiseLevel >= 130 && noiseLevel < 150) {
+        } else if (noiseLevel >= 130) {
             color.set(231.0 / 255.0, 77.0 / 255.0, 24.0 / 255.0, 1.0);
-        } else if (noiseLevel >= 120 && noiseLevel < 130) {
+        } else if (noiseLevel >= 120) {
             color.set(237.0 / 255.0, 115.0 / 255.0, 14.0 / 255.0, 1.0);
-        } else if (noiseLevel >= 110 && noiseLevel < 120) {
+        } else if (noiseLevel >= 110) {
             color.set(242.0 / 255.0, 141.0 / 255.0, 11.0 / 255.0, 1.0);
-        } else if (noiseLevel >= 100 && noiseLevel < 110) {
+        } else if (noiseLevel >= 100) {
             color.set(224.0 / 255.0, 157.0 / 255.0, 27.0 / 255.0, 1.0);
-        } else if (noiseLevel >= 85 && noiseLevel < 100) {
+        } else if (noiseLevel >= 85) {
             color.set(191.0 / 255.0, 165.0 / 255.0, 55.0 / 255.0, 1.0);
-        } else if (noiseLevel >= 80 && noiseLevel < 85) {
+        } else if (noiseLevel >= 80) {
             color.set(151.0 / 255.0, 167.0 / 255.0, 78.0 / 255.0, 1.0);
-        } else if (noiseLevel >= 70 && noiseLevel < 80) {
+        } else if (noiseLevel >= 70) {
             color.set(70.0 / 255.0, 165.0 / 255.0, 97.0 / 255.0, 1.0);
-        } else if (noiseLevel >= 60 && noiseLevel < 70) {
+        } else if (noiseLevel >= 60) {
             color.set(53.0 / 255.0, 163.0 / 255.0, 132.0 / 255.0, 1.0);
-        } else if (noiseLevel >= 30 && noiseLevel < 60) {
+        } else if (noiseLevel >= 30) {
             color.set(38.0 / 255.0, 162.0 / 255.0, 170.0 / 255.0, 1.0);
         } else {
             color.set(23.0 / 255.0, 159.0 / 255.0, 201.0 / 255.0, 1.0);
@@ -168,17 +164,6 @@ public class DataTypePlan {
     }
 
     public GaiaScene getGaiaScene() {
-        /*
-            Vector3d centerGeoCoords; // (longitude, latitude, altitude).***
-            public ArrayList<Vertex> vertexList;
-            public ArrayList<Vector3d> positionsLC;
-
-            public double[] minSoundValue;
-            public double[] maxSoundValue;
-
-            public int num_Rect;
-            public ArrayList<RectangleFace> faceList;
-        */
         GaiaScene gaiaScene = new GaiaScene();
         GaiaNode rootNode = new GaiaNode();
         gaiaScene.getNodes().add(rootNode);
@@ -215,14 +200,11 @@ public class DataTypePlan {
             gaiaVertex.setColor(byteColor);
 
             primitive.getVertices().add(gaiaVertex);
-            int hola = 0;
         }
 
         // faces.***
         int[] trianglesIndices = new int[2 * 3]; // 2 triangles X 3 Vertices.***
-        for (int i = 0; i < faceList.size(); i++) {
-            RectangleFace face = faceList.get(i);
-
+        for (RectangleFace face : faceList) {
             face.getTrianglesIndices(trianglesIndices);
             GaiaFace gaiaFace = new GaiaFace();
             int[] indicesA = new int[3];
@@ -250,7 +232,6 @@ public class DataTypePlan {
         GaiaScene gaiaScene = getGaiaScene();
         GltfWriter gltfWriter = new GltfWriter();
         gltfWriter.writeGlb(gaiaScene, glbFilePath);
-        int hola = 0;
     }
 
     public void writeToJsonFile(String jsonFilePath) throws IOException {
@@ -363,11 +344,6 @@ public class DataTypePlan {
         }
 
         objectNodeRoot.putPOJO("indices", indices);
-
-        if (this.maxSoundValue == null) {
-            int hola = 0;
-        }
-
         objectNodeRoot.put("maxSoundValue", this.maxSoundValue[0]);
         objectNodeRoot.put("minSoundValue", this.minSoundValue[0]);
 

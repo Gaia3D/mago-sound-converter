@@ -320,9 +320,6 @@ public class HalfEdgeUtils {
                 halfEdgeVertex.copyFromGaiaVertex(gaiaVertex);
                 mapGaiaVertexToHalfEdgeVertex.put(gaiaVertex, halfEdgeVertex);
             }
-            else {
-                int hola = 0;
-            }
 
             HalfEdge halfEdge = new HalfEdge();
             halfEdge.setStartVertex(halfEdgeVertex);
