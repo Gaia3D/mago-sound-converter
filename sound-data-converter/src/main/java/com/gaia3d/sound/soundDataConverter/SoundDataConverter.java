@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.gaia3d.basic.structure.*;
 import com.gaia3d.sound.dataStructure.*;
 import com.gaia3d.sound.utils.StringModifier;
 import com.gaia3d.sound.utils.io.LittleEndianDataInputStream;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 
 import java.io.*;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 public class SoundDataConverter {
     public CoordinateReferenceSystem inputCrs = null;
 
@@ -24,14 +25,15 @@ public class SoundDataConverter {
     public ArrayList<String> vecJsonFileNames = new ArrayList<>();
 
     public SoundDataConverter() {
-        System.out.println("SoundDataConverter constructor");
+        log.info("SoundDataConverter constructor");
     }
 
     public void convertDataInFolder(String inputFolderPath, String outputFolderPath) {
-        System.out.println("SoundDataConverter convert");
+        log.info("SoundDataConverter convert");
         // 1rst, find all files *.RBin in the input folder.***
         List<String> vecFileExtensions = new ArrayList<>();
         vecFileExtensions.add("RBin");
+        vecFileExtensions.add("OUT");
         List<String> vecFileNames = new ArrayList<>();
         StringModifier.getFileNamesInFolder(inputFolderPath, vecFileExtensions, vecFileNames);
 
@@ -39,7 +41,7 @@ public class SoundDataConverter {
         for (int i = 0; i < filesCount; i++) {
             String fileName = vecFileNames.get(i);
             //String rawFileName = StringModifier.getRawFileName(fileName);
-            System.out.println("fileName = " + fileName);
+            log.info("fileName = " + fileName);
 
 
             String inputFilePath = inputFolderPath + "/" + fileName;
@@ -121,7 +123,7 @@ public class SoundDataConverter {
 
         JsonNode jsonNode = new ObjectMapper().readTree(objectNodeRoot.toString());
         String jsonFileName = "JsonIndex.json";
-        String jsonFilePath = outputFolderPath  + File.separator +  jsonFileName;
+        String jsonFilePath = outputFolderPath + File.separator + jsonFileName;
         objectMapper.writeValue(new File(jsonFilePath), jsonNode);
 
     }
@@ -169,7 +171,7 @@ public class SoundDataConverter {
     }
 
     public void convertData(String inputFilePath, String outputFolderPath) throws FileNotFoundException {
-        System.out.println("SoundDataConverter convert");
+        log.info("SoundDataConverter convert");
         // the input file is binary.***
         // the output file is json.***
         Path inputPath = Paths.get(inputFilePath);
@@ -297,10 +299,8 @@ public class SoundDataConverter {
                             String outputGltfFilePath = outputFolderPath + "\\" + glbFileName;
                             resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
                             // End Glb.--------------------------------------------------------
-                        }
-                        else
-                        {
-                            System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                        } else {
+                            log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
                         }
                         break;
                     }
@@ -329,10 +329,8 @@ public class SoundDataConverter {
                             String outputGltfFilePath = outputFolderPath + "\\" + glbFileName;
                             resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
                             // End Glb.--------------------------------------------------------
-                        }
-                        else
-                        {
-                            System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                        } else {
+                            log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
                         }
                         break;
                     }
@@ -352,7 +350,7 @@ public class SoundDataConverter {
                             MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
                         }
 
-                        String outputJsonFilePath = outputFolderPath  + File.separator +  jsonFileName;
+                        String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
                         resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
 
                         // GLB.************************************************************
@@ -378,7 +376,7 @@ public class SoundDataConverter {
                             MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
                         }
 
-                        String outputJsonFilePath = outputFolderPath  + File.separator +  jsonFileName;
+                        String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
                         resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
 
                         // GLB.************************************************************
@@ -415,7 +413,7 @@ public class SoundDataConverter {
                         DataTypeStableFacility resultDataTypeStableFacility = new DataTypeStableFacility();
                         parseCase_4_1_3(stream, resultDataTypeStableFacility);
 
-                        String outputJsonFilePath = outputFolderPath  + File.separator +  jsonFileName;
+                        String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
                         resultDataTypeStableFacility.writeToJsonFile(outputJsonFilePath);
                         break;
                     }
@@ -434,7 +432,7 @@ public class SoundDataConverter {
                     case 29007:
                         break;
                     default: {
-                        System.out.println("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                        log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
                         //throw new RuntimeException("Itype = " + Itype + ", iteration = " + i);
                         break;
                     }

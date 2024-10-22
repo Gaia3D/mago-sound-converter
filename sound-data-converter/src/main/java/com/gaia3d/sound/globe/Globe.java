@@ -1,12 +1,13 @@
 package com.gaia3d.sound.globe;
 
+import lombok.extern.slf4j.Slf4j;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import java.util.Vector;
 
-public class Globe
-{
+@Slf4j
+public class Globe {
     public static double equatorialRadiusMeters() {
         return 6378137.0; // meters.
     }

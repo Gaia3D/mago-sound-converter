@@ -4,13 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class DataTypeStableFacility
-{
+@Slf4j
+public class DataTypeStableFacility {
     public int objNLvType;
     public int numBuilding;
 
@@ -25,8 +26,7 @@ public class DataTypeStableFacility
         objectNodeRoot.put("numBuilding", this.numBuilding);
 
         ArrayNode arrayNodeSubDataTypeStableFacility = objectMapper.createArrayNode();
-        for (int i = 0; i < subDataTypeStableFacilityArray.size(); i++)
-        {
+        for (int i = 0; i < subDataTypeStableFacilityArray.size(); i++) {
             SubDataTypeStableFacility subDataTypeStableFacility = subDataTypeStableFacilityArray.get(i);
             ObjectNode objectNodeSubDataTypeStableFacility = objectMapper.createObjectNode();
             objectNodeSubDataTypeStableFacility.put("index", subDataTypeStableFacility.index);
@@ -34,8 +34,7 @@ public class DataTypeStableFacility
             objectNodeSubDataTypeStableFacility.put("height", subDataTypeStableFacility.height);
 
             ArrayNode arrayNodeObjNLvList = objectMapper.createArrayNode();
-            for (int j = 0; j < subDataTypeStableFacility.objNLvList.size(); j++)
-            {
+            for (int j = 0; j < subDataTypeStableFacility.objNLvList.size(); j++) {
                 arrayNodeObjNLvList.add(subDataTypeStableFacility.objNLvList.get(j));
             }
             objectNodeSubDataTypeStableFacility.set("objNLvList", arrayNodeObjNLvList);

@@ -29,6 +29,7 @@ public class StringModifier {
             } else {
                 if (word.equals(vecStrings.get(i))) {
                     return true;
+
                 }
             }
 

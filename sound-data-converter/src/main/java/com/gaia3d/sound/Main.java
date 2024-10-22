@@ -3,6 +3,7 @@ package com.gaia3d.sound;
 
 import com.gaia3d.sound.soundDataConverter.SoundDataConverter;
 import com.gaia3d.sound.utils.StringModifier;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.locationtech.proj4j.CRSFactory;
 
@@ -10,11 +11,12 @@ import java.io.IOException;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
+@Slf4j
 public class Main {
     public static void main(String[] args) throws ParseException, IOException {
         Configurator.initConsoleLogger();
 
-        System.out.println("Start the program.");
+        log.info("Start the program.");
         Options options = new Options();
         options.addOption("type", true, "conversion type");
         options.addOption("input", true, "input folder path");
@@ -50,7 +52,9 @@ public class Main {
 
             soundDataConverter.convertDataInFolder(inputFolderPath, outputFolderPath);
             soundDataConverter.writeJsonIndexFile(outputFolderPath);
+        } else {
+            log.error("Conversion type is not supported.");
         }
-        System.out.println("End the program.");
+        log.info("End the program.");
     }
 }

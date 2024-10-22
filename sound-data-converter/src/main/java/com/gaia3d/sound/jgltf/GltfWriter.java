@@ -28,15 +28,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * GltfWriter is a class that writes the glTF file.
  * It contains the method to write the glTF file from the GaiaScene object.
  * The glTF file is written in the glTF 2.0 format.
  * author znkim
- * @since 1.0.0
+ *
  * @see GaiaScene , GltfBinary
+ * @since 1.0.0
  */
 @Slf4j
 @NoArgsConstructor
@@ -51,9 +55,11 @@ public class GltfWriter {
             log.error("Failed to write glTF file.");
         }
     }
+
     public void writeGltf(GaiaScene gaiaScene, String outputPath) {
         writeGltf(gaiaScene, new File(outputPath));
     }
+
     public void writeGlb(GaiaScene gaiaScene, File outputPath) {
         try {
             GltfModel gltfModel = convert(gaiaScene);
@@ -64,6 +70,7 @@ public class GltfWriter {
             log.error("Failed to write glb file.");
         }
     }
+
     public void writeGlb(GaiaScene gaiaScene, OutputStream outputStream) {
         try {
             GltfModel gltfModel = convert(gaiaScene);
@@ -89,7 +96,7 @@ public class GltfWriter {
 
         gaiaScene.getMaterials().forEach(gaiaMaterial -> createMaterial(gltf, gaiaMaterial));
         convertNode(gltf, binary, null, gaiaScene.getNodes());
-        
+
         binary.fill();
         if (binary.getBody() != null) {
             GltfAssetV2 asset = new GltfAssetV2(gltf, binary.getBody());
@@ -179,7 +186,7 @@ public class GltfWriter {
         int batchIdBufferViewId = nodeBuffer.getBatchIdBufferViewId();
 
         if (indicesBuffer != null) {
-            for (int indicesValue: indices) {
+            for (int indicesValue : indices) {
                 if (isOverShortVertices) {
                     indicesBuffer.putInt(indicesValue);
                 } else {
@@ -189,27 +196,27 @@ public class GltfWriter {
             }
         }
         if (positionsBuffer != null) {
-            for (Float position: positions) {
+            for (Float position : positions) {
                 positionsBuffer.putFloat(position);
             }
         }
         if (normalsBuffer != null) {
-            for (Float normal: normals) {
+            for (Float normal : normals) {
                 normalsBuffer.putFloat(normal);
             }
         }
         if (colorsBuffer != null) {
-            for (Byte color: colors) {
+            for (Byte color : colors) {
                 colorsBuffer.put(color);
             }
         }
         if (texcoordsBuffer != null) {
-            for (Float textureCoordinate: texcoords) {
+            for (Float textureCoordinate : texcoords) {
                 texcoordsBuffer.putFloat(textureCoordinate);
             }
         }
         if (batchIdBuffer != null) {
-            for (Float batchId: batchIds) {
+            for (Float batchId : batchIds) {
                 batchIdBuffer.putFloat(batchId);
             }
         }
@@ -344,7 +351,7 @@ public class GltfWriter {
 
         nodes.add(rootNode);
         gltf.setNodes(nodes);
-        scene.addNodes(gltf.getNodes().size() -1);
+        scene.addNodes(gltf.getNodes().size() - 1);
         scenes.add(scene);
         gltf.setScenes(scenes);
         gltf.setScene(gltf.getScenes().size() - 1);
@@ -419,10 +426,8 @@ public class GltfWriter {
         bufferView.setBuffer(buffer);
         bufferView.setByteOffset(offset);
         bufferView.setByteLength(length);
-        if (target > -1)
-            bufferView.setTarget(target);
-        if (stride > -1)
-            bufferView.setByteStride(stride);
+        if (target > -1) bufferView.setTarget(target);
+        if (stride > -1) bufferView.setByteStride(stride);
         gltf.addBufferViews(bufferView);
         return gltf.getBufferViews().size() - 1;
     }
@@ -492,7 +497,7 @@ public class GltfWriter {
         image.setUri(uri);
         image.setMimeType(mimeType);
         gltf.addImages(image);
-        return gltf.getImages().size() -1;
+        return gltf.getImages().size() - 1;
     }
 
     private int createTexture(GlTF gltf, GaiaTexture gaiaTexture) {
@@ -577,7 +582,7 @@ public class GltfWriter {
             assert formatName != null;
             ImageIO.write(bufferedImage, formatName, baos);
             byte[] bytes = baos.toByteArray();
-            imageString = "data:" + mimeType +";base64," + Base64.getEncoder().encodeToString(bytes);
+            imageString = "data:" + mimeType + ";base64," + Base64.getEncoder().encodeToString(bytes);
             bufferedImage.flush();
             bytes = null;
         } catch (IOException e) {
