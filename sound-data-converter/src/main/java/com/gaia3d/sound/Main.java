@@ -1,12 +1,14 @@
 package com.gaia3d.sound;
 
 
-import com.gaia3d.sound.soundDataConverter.SoundDataConverter;
+import com.gaia3d.sound.converter.InterferenceConverter;
+import com.gaia3d.sound.converter.SoundDataConverter;
 import com.gaia3d.sound.utils.StringModifier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.locationtech.proj4j.CRSFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
@@ -17,7 +19,6 @@ public class Main {
         Configurator.initConsoleLogger();
 
         printStartMessage();
-        log.info("Start the program.");
         Options options = new Options();
         options.addOption("type", true, "conversion type");
         options.addOption("input", true, "input folder path");
@@ -30,6 +31,9 @@ public class Main {
         String type = commandLine.getOptionValue("type");
 
         if (type.equals("SOUND_SIMULATION")) {
+            log.info("==============================================");
+            log.info("Start Sound Simulation Converter");
+
             // Sound simulation data.************************************
             String inputFolderPath = commandLine.getOptionValue("input");
             String outputFolderPath = commandLine.getOptionValue("output");
@@ -50,11 +54,20 @@ public class Main {
             }
 
             StringModifier.createAllFoldersIfNoExist(outputFolderPath);
-
             soundDataConverter.convertDataInFolder(inputFolderPath, outputFolderPath);
             soundDataConverter.writeJsonIndexFile(outputFolderPath);
-        } else if (type.equals("RADIO_WAVE")) {
-            log.error("RADIO_WAVE Conversion type is not supported yet.");
+        } else if (type.equals("RADIO_WAVE") || type.equals("INTERFERENCE")) {
+            log.info("==============================================");
+            log.info("Start Radio Wave Converter");
+
+            // Sound simulation data.************************************
+            String inputFolderPath = commandLine.getOptionValue("input");
+            String outputFolderPath = commandLine.getOptionValue("output");
+            File inputPath = new File(inputFolderPath);
+            File outputPath = new File(outputFolderPath);
+
+            InterferenceConverter interferenceConverter = new InterferenceConverter(inputPath, outputPath);
+            interferenceConverter.convert(inputFolderPath, outputFolderPath);
         } else {
             log.error("Conversion type is not supported.");
         }
