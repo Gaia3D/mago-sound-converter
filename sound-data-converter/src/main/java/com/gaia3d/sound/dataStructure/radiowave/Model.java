@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Model {
+    private String name;
     private int length;
-    List<?> values;
+    private List<?> values;
 }

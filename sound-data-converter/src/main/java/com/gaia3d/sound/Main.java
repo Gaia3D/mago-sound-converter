@@ -7,6 +7,7 @@ import com.gaia3d.sound.utils.StringModifier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,8 +67,26 @@ public class Main {
             File inputPath = new File(inputFolderPath);
             File outputPath = new File(outputFolderPath);
 
-            InterferenceConverter interferenceConverter = new InterferenceConverter(inputPath, outputPath);
-            interferenceConverter.convert(inputFolderPath, outputFolderPath);
+            String inputProj;
+            if (commandLine.hasOption("inputProj")) {
+                inputProj = commandLine.getOptionValue("inputProj");
+            } else {
+                inputProj = "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs"; // 5186.***
+            }
+
+            // set the coords of the inputData.***
+            CRSFactory factory = new CRSFactory();
+            // provisionally set the proj4 as 5186.***
+            String proj = inputProj;
+            CoordinateReferenceSystem coordinateReferenceSystem = null;
+            if (proj != null && !proj.isEmpty()) {
+                coordinateReferenceSystem = factory.createFromParameters("CUSTOM", proj);
+            } else {
+                throw new IllegalArgumentException("Input proj4 is not valid.");
+            }
+
+            InterferenceConverter interferenceConverter = new InterferenceConverter(inputPath, outputPath, coordinateReferenceSystem);
+            interferenceConverter.convert();
         } else {
             log.error("Conversion type is not supported.");
         }

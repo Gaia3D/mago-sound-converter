@@ -23,8 +23,8 @@ public class ModelMagneticFieldContour {
     */
 
     private int index;
-    private int x;
-    private int y;
+    private float x;
+    private float y;
     private float relativeHeight;
     private float value;
 

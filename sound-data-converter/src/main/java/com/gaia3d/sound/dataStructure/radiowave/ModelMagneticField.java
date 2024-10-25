@@ -30,7 +30,7 @@ public class ModelMagneticField {
     private int x;
     private int y;
     private float relativeHeight;
-    private float distanceToDwelling ;
+    private float distanceFromDwelling;
     private float heightOfWire;
     private float value;
     private int result;
@@ -43,7 +43,7 @@ public class ModelMagneticField {
                 .x(Integer.parseInt(split[1]))
                 .y(Integer.parseInt(split[2]))
                 .relativeHeight(Float.parseFloat(split[3]))
-                .distanceToDwelling(Float.parseFloat(split[4]))
+                .distanceFromDwelling(Float.parseFloat(split[4]))
                 .heightOfWire(Float.parseFloat(split[5]))
                 .value(Float.parseFloat(split[6]))
                 .result(Integer.parseInt(split[7]))
