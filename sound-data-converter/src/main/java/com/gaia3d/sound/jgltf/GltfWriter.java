@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL20;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -365,13 +364,16 @@ public class GltfWriter {
     }
 
     private void createBuffer(GlTF gltf, GltfNodeBuffer nodeBuffer) {
+        int GL_ELEMENT_ARRAY_BUFFER = 34963;
+        int GL_ARRAY_BUFFER = 34962;
+
         Buffer buffer = initBuffer(gltf);
         int bufferLength = buffer.getByteLength() == null ? 0 : buffer.getByteLength();
         int bufferId = 0;
         int bufferOffset = 0;
         if (nodeBuffer.getIndicesBuffer() != null) {
             ByteBuffer indicesBuffer = nodeBuffer.getIndicesBuffer();
-            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, indicesBuffer.capacity(), -1, GL20.GL_ELEMENT_ARRAY_BUFFER);
+            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, indicesBuffer.capacity(), -1, GL_ELEMENT_ARRAY_BUFFER);
             nodeBuffer.setIndicesBufferViewId(bufferViewId);
             BufferView bufferView = gltf.getBufferViews().get(bufferViewId);
             bufferView.setName("indices");
@@ -379,7 +381,7 @@ public class GltfWriter {
         }
         if (nodeBuffer.getPositionsBuffer() != null) {
             ByteBuffer positionBuffer = nodeBuffer.getPositionsBuffer();
-            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, positionBuffer.capacity(), 12, GL20.GL_ARRAY_BUFFER);
+            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, positionBuffer.capacity(), 12, GL_ARRAY_BUFFER);
             nodeBuffer.setPositionsBufferViewId(bufferViewId);
             BufferView bufferView = gltf.getBufferViews().get(bufferViewId);
             bufferView.setName("positions");
@@ -387,7 +389,7 @@ public class GltfWriter {
         }
         if (nodeBuffer.getNormalsBuffer() != null) {
             ByteBuffer normalsBuffer = nodeBuffer.getNormalsBuffer();
-            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, normalsBuffer.capacity(), 12, GL20.GL_ARRAY_BUFFER);
+            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, normalsBuffer.capacity(), 12, GL_ARRAY_BUFFER);
             nodeBuffer.setNormalsBufferViewId(bufferViewId);
             BufferView bufferView = gltf.getBufferViews().get(bufferViewId);
             bufferView.setName("normals");
@@ -395,7 +397,7 @@ public class GltfWriter {
         }
         if (nodeBuffer.getColorsBuffer() != null) {
             ByteBuffer colorsBuffer = nodeBuffer.getColorsBuffer();
-            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, colorsBuffer.capacity(), 4, GL20.GL_ARRAY_BUFFER);
+            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, colorsBuffer.capacity(), 4, GL_ARRAY_BUFFER);
             nodeBuffer.setColorsBufferViewId(bufferViewId);
             BufferView bufferView = gltf.getBufferViews().get(bufferViewId);
             bufferView.setName("colors");
@@ -403,7 +405,7 @@ public class GltfWriter {
         }
         if (nodeBuffer.getTexcoordsBuffer() != null) {
             ByteBuffer texcoordsBuffer = nodeBuffer.getTexcoordsBuffer();
-            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, texcoordsBuffer.capacity(), 8, GL20.GL_ARRAY_BUFFER);
+            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, texcoordsBuffer.capacity(), 8, GL_ARRAY_BUFFER);
             nodeBuffer.setTexcoordsBufferViewId(bufferViewId);
             BufferView bufferView = gltf.getBufferViews().get(bufferViewId);
             bufferView.setName("texcoords");
@@ -411,7 +413,7 @@ public class GltfWriter {
         }
         if (nodeBuffer.getBatchIdBuffer() != null) {
             ByteBuffer batchIdBuffer = nodeBuffer.getBatchIdBuffer();
-            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, batchIdBuffer.capacity(), 4, GL20.GL_ARRAY_BUFFER);
+            int bufferViewId = createBufferView(gltf, bufferId, bufferLength + bufferOffset, batchIdBuffer.capacity(), 4, GL_ARRAY_BUFFER);
             nodeBuffer.setBatchIdBufferViewId(bufferViewId);
             BufferView bufferView = gltf.getBufferViews().get(bufferViewId);
             bufferView.setName("batchIds");
@@ -525,11 +527,15 @@ public class GltfWriter {
     }
 
     private Sampler genSampler() {
+        int GL_LINEAR = 9729;
+        int GL_LINEAR_MIPMAP_LINEAR = 9987;
+        int GL_REPEAT = 10497;
+
         Sampler sampler = new Sampler();
-        sampler.setMagFilter(GL20.GL_LINEAR);
-        sampler.setMinFilter(GL20.GL_LINEAR_MIPMAP_LINEAR);
-        sampler.setWrapS(GL20.GL_REPEAT);
-        sampler.setWrapT(GL20.GL_REPEAT);
+        sampler.setMagFilter(GL_LINEAR);
+        sampler.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+        sampler.setWrapS(GL_REPEAT);
+        sampler.setWrapT(GL_REPEAT);
         return sampler;
     }
 

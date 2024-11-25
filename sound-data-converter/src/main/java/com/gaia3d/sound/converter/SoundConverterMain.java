@@ -1,8 +1,7 @@
-package com.gaia3d.sound;
+package com.gaia3d.sound.converter;
 
 
-import com.gaia3d.sound.converter.InterferenceConverter;
-import com.gaia3d.sound.converter.SoundDataConverter;
+import com.gaia3d.sound.Configurator;
 import com.gaia3d.sound.utils.StringModifier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
@@ -15,7 +14,7 @@ import java.io.IOException;
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 @Slf4j
-public class Main {
+public class SoundConverterMain {
     public static void main(String[] args) throws ParseException, IOException {
         Configurator.initConsoleLogger();
 
@@ -31,13 +30,31 @@ public class Main {
 
         String type = commandLine.getOptionValue("type");
 
+        String inputFolderPath = commandLine.getOptionValue("input");
+        String outputFolderPath = commandLine.getOptionValue("output");
+        File inputPath = new File(inputFolderPath);
+        File outputPath = new File(outputFolderPath);
+
+        if (inputFolderPath == null || inputFolderPath.isEmpty()) {
+            log.error("Input folder path is not valid.");
+            return;
+        } else if (!inputPath.exists()) {
+            log.error("Input folder does not exist.");
+            return;
+        }
+
+        if (outputFolderPath == null || outputFolderPath.isEmpty()) {
+            log.error("Output folder path is not valid.");
+            return;
+        } else if (!outputPath.exists()) {
+            outputPath.mkdirs();
+        }
+
         if (type.equals("SOUND_SIMULATION")) {
             log.info("==============================================");
             log.info("Start Sound Simulation Converter");
 
             // Sound simulation data.************************************
-            String inputFolderPath = commandLine.getOptionValue("input");
-            String outputFolderPath = commandLine.getOptionValue("output");
             // check if exist the inputProj.***
             String inputProj = "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs"; // 5186.***
             if (commandLine.hasOption("inputProj")) {
@@ -62,11 +79,6 @@ public class Main {
             log.info("Start Radio Wave Converter");
 
             // Sound simulation data.************************************
-            String inputFolderPath = commandLine.getOptionValue("input");
-            String outputFolderPath = commandLine.getOptionValue("output");
-            File inputPath = new File(inputFolderPath);
-            File outputPath = new File(outputFolderPath);
-
             String inputProj;
             if (commandLine.hasOption("inputProj")) {
                 inputProj = commandLine.getOptionValue("inputProj");

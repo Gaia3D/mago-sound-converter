@@ -14,7 +14,7 @@
         <module name="sound-data-converter.test" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17">
+    <bytecodeTargetLevel target="11">
       <module name="sound-data-converter.sound-data-converter.main" target="11" />
       <module name="sound-data-converter.sound-data-converter.test" target="11" />
     </bytecodeTargetLevel>

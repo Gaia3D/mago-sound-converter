@@ -2,6 +2,7 @@ package com.gaia3d.sound.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaia3d.sound.dataStructure.radiowave.*;
+import com.gaia3d.sound.utils.io.LittleEndianDataInputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -13,10 +14,7 @@ import org.locationtech.proj4j.ProjCoordinate;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
@@ -25,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InterferenceConverter {
 
-    private static final String INPUT_FILE_EXTENSION = ".CSV";
+    private static final String INPUT_FILE_EXTENSION = ".OUT";
     private static final String RADIO_FILE_NAME = "M_RI";
     private static final String TV_FILE_NAME = "M_TVI";
     private static final String MAGNETIC_FILE_NAME = "M_MF";
@@ -119,8 +117,64 @@ public class InterferenceConverter {
     private List<ModelRadio> readRadioWaveFile(File file) {
         // Read the radio wave file
         List<ModelRadio> radioList = new ArrayList<>();
-        int columnCount = InterferenceType.RADIO.getColumnCount();
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        //int columnCount = InterferenceType.RADIO.getColumnCount();
+        try (LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+            /*
+                N (int, 4byte)	개수
+                index (int, 4byte)	index
+                x (float, 4byte)	x좌표
+                y (float, 4byte)	y좌표
+                RH (float, 4byte)	라디오 안테나 높이
+                value (float, 4byte)	청명시 라디오 수신장해 예측결과
+                SNR (float, 4byte)	청명시 라디오 전계장도 대장 해비 예측결과
+                rank (int, 4byte)	청명시 라디오 수신 품질등급 평가결과
+                value_r (float, 4byte)	강우시 라디오 수신장해 예측결과
+                SNR_r (float, 4byte)	강우시 라디오 전계강도 대장 해비 예측결과
+                rank_r (int, 4byte)	강우시 라디오 수신 품질등급 평가결과
+                dist_min (float, 4byte)	최근접 송진선로와의 이격거리
+                in (int, 4byte)	지형모델링 영역 내 존재여부 (여 : 1, 부 : 0)
+             */
+
+            int count = dis.readInt();
+            for (int i = 0; i < count; i++) {
+                int index = dis.readInt();
+                float x = dis.readFloat();
+                float y = dis.readFloat();
+                float relativeHeight = dis.readFloat();
+                float value = dis.readFloat();
+                float snr = dis.readFloat();
+                int rank = dis.readInt();
+                float valueR = dis.readFloat();
+                float snrR = dis.readFloat();
+                int rankR = dis.readInt();
+                float distMin = dis.readFloat();
+                int in = dis.readInt();
+
+                ModelRadio radio = ModelRadio.builder()
+                        .index(index)
+                        .x(x)
+                        .y(y)
+                        .relativeHeight(relativeHeight)
+                        .value(value)
+                        .snr(snr)
+                        .rank(rank)
+                        .valueInRain(valueR)
+                        .snrInRain(snrR)
+                        .rankInRain(rankR)
+                        .nearestDistance(distMin)
+                        .in(in).build();
+                //ModelRadio radio = ModelRadio.of(dis);
+                radioList.add(radio);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            log.error("Failed to read radio wave file: {}", file, e);
+            throw new RuntimeException(e);
+        }
+
+
+        /*try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             int lineCount = 0;
             String line;
             while ((line = br.readLine()) != null) {
@@ -142,14 +196,58 @@ public class InterferenceConverter {
             }
         } catch (IOException e) {
             log.error("Failed to read radio wave file: {}", file, e);
-        }
+        }*/
         return radioList;
     }
 
     private List<ModelTV> readTVInterferenceFile(File file) {
         // Read the TV interference file
         List<ModelTV> tvList = new ArrayList<>();
-        int columnCount = InterferenceType.TV.getColumnCount();
+        try (LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+            /*
+                N (int, 4byte)	개수
+                index (int, 4byte)	index
+                x (float, 4byte)	x좌표
+                y (float, 4byte)	y좌표
+                RH (float, 4byte)	TV 안테나 높이
+                value (float, 4byte)	TV 수신장해 예측결과
+                SNR (float, 4byte)	TV 전계강도대장해비 예측결과
+                rank (int, 4byte)	TV 수신 품질등급 평가결과
+                dist_min (float, 4byte)	최근접 송진선로와의 이격거리
+                in (int, 4byte)	지형모델링 영역 내 존재여부 (여 : 1, 부 : 0)
+             */
+            int count = dis.readInt();
+            for (int i = 0; i < count; i++) {
+                int index = dis.readInt();
+                float x = dis.readFloat();
+                float y = dis.readFloat();
+                float relativeHeight = dis.readFloat();
+                float value = dis.readFloat();
+                float snr = dis.readFloat();
+                int rank = dis.readInt();
+                float distMin = dis.readFloat();
+                int in = dis.readInt();
+                ModelTV tv = ModelTV.builder()
+                        .index(index)
+                        .x(x)
+                        .y(y)
+                        .relativeHeight(relativeHeight)
+                        .value(value)
+                        .snr(snr)
+                        .rank(rank)
+                        .nearestDistance(distMin)
+                        .in(in).build();
+                tvList.add(tv);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            log.error("Failed to read radio wave file: {}", file, e);
+            throw new RuntimeException(e);
+        }
+
+
+        /*int columnCount = InterferenceType.TV.getColumnCount();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             int lineCount = 0;
             String line;
@@ -172,14 +270,59 @@ public class InterferenceConverter {
             }
         } catch (IOException e) {
             log.error("Failed to read TV interference file: {}", file, e);
-        }
+        }*/
         return tvList;
     }
 
     private List<ModelMagneticField> readMagneticFieldFile(File file) {
         // Read the magnetic field file
         List<ModelMagneticField> magneticFieldList = new ArrayList<>();
-        int columnCount = InterferenceType.MAGNETIC_FIELD.getColumnCount();
+        try (LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+            /*
+                N (int, 4byte)	개수
+                index (int, 4byte)	index
+                x (float, 4byte)	x좌표
+                y (float, 4byte)	y좌표
+                RH (float, 4byte)	지상고
+                dist2d (float, 4byte)	주거지와의 수평거리
+                H_src (float, 4byte)	전선의 지상고
+                Value[uT] (float, 4byte)	자계 예측 결과
+                ok (int, 4byte)	판정결과(기준 만족 : 1, 기준 불만족 : 0)
+                ref (float, 4byte)	자계 평가 기준
+                in (int, 4byte)	지형모델링 영역 내 존재여부 (여 : 1, 부 : 0)
+            */
+            int count = dis.readInt();
+            for (int i = 0; i < count; i++) {
+                int index = dis.readInt();
+                int x = dis.readInt();
+                int y = dis.readInt();
+                float relativeHeight = dis.readFloat();
+                float distanceFromDwelling = dis.readFloat();
+                float heightOfWire = dis.readFloat();
+                float value = dis.readFloat();
+                int result = dis.readInt();
+                float ref = dis.readFloat();
+                int in = dis.readInt();
+                ModelMagneticField magneticField = ModelMagneticField.builder()
+                        .index(index)
+                        .x(x)
+                        .y(y)
+                        .relativeHeight(relativeHeight)
+                        .distanceFromDwelling(distanceFromDwelling)
+                        .heightOfWire(heightOfWire)
+                        .value(value)
+                        .result(result)
+                        .ref(ref)
+                        .in(in).build();
+                magneticFieldList.add(magneticField);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        /*int columnCount = InterferenceType.MAGNETIC_FIELD.getColumnCount();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             int lineCount = 0;
             String line;
@@ -202,7 +345,7 @@ public class InterferenceConverter {
             }
         } catch (IOException e) {
             log.error("Failed to read magnetic field file: {}", file, e);
-        }
+        }*/
         return magneticFieldList;
     }
 
@@ -338,7 +481,39 @@ public class InterferenceConverter {
     private List<ModelMagneticFieldContour> readMagneticFieldContourFile(File file) {
         // Read the magnetic field contour file
         List<ModelMagneticFieldContour> magneticFieldContourList = new ArrayList<>();
-        int columnCount = InterferenceType.MAGNETIC_FIELD_CONTOUR.getColumnCount();
+        try (LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+            /*
+                Nx (int, 4byte)	x방향 개수
+                Ny (int, 4byte)	y방향 개수
+                index (int, 4byte)	index
+                x (float, 4byte)	x좌표
+                y (float, 4byte)	y좌표
+                RH (float, 4byte)	지상고
+                uT	자계 예측 결과
+            */
+            int nx = dis.readInt();
+            int ny = dis.readInt();
+            for (int i = 0; i < nx * ny; i++) {
+                int index = dis.readInt();
+                float x = dis.readFloat();
+                float y = dis.readFloat();
+                float relativeHeight = dis.readFloat();
+                float value = dis.readFloat();
+                ModelMagneticFieldContour magneticFieldContour = ModelMagneticFieldContour.builder()
+                        .index(index)
+                        .x(x)
+                        .y(y)
+                        .relativeHeight(relativeHeight)
+                        .value(value).build();
+                magneticFieldContourList.add(magneticFieldContour);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        /*int columnCount = InterferenceType.MAGNETIC_FIELD_CONTOUR.getColumnCount();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             int lineCount = 0;
             String line;
@@ -361,7 +536,7 @@ public class InterferenceConverter {
             }
         } catch (IOException e) {
             log.error("Failed to read magnetic field contour file: {}", file, e);
-        }
+        }*/
         return magneticFieldContourList;
     }
 

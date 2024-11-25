@@ -38,7 +38,27 @@ public class ImageUtils {
     }
 
     public static String getFormatNameByMimeType(String mimeType) {
-        return switch (mimeType) {
+        if (mimeType.equals("image/png")) {
+            return "png";
+        } else if (mimeType.equals("image/jpeg")) {
+            return "jpeg";
+        } else if (mimeType.equals("image/gif")) {
+            return "gif";
+        } else if (mimeType.equals("image/bmp")) {
+            return "bmp";
+        } else if (mimeType.equals("image/tiff")) {
+            return "tiff";
+        } else if (mimeType.equals("image/x-icon")) {
+            return "ico";
+        } else if (mimeType.equals("image/svg+xml")) {
+            return "svg";
+        } else if (mimeType.equals("image/webp")) {
+            return "webp";
+        } else {
+            return null;
+        }
+
+        /*return switch (mimeType) {
             case "image/png" -> "png";
             case "image/jpeg" -> "jpeg";
             case "image/gif" -> "gif";
@@ -48,13 +68,31 @@ public class ImageUtils {
             case "image/svg+xml" -> "svg";
             case "image/webp" -> "webp";
             default -> null;
-        };
+        };*/
     }
 
     public static String getMimeTypeByExtension(String extension) {
         String mimeType;
         extension = extension.toLowerCase();
-        mimeType = switch (extension) {
+        if (extension.equals("jpg") || extension.equals("jpeg")) {
+            mimeType = "image/jpeg";
+        } else if (extension.equals("gif")) {
+            mimeType = "image/gif";
+        } else if (extension.equals("bmp")) {
+            mimeType = "image/bmp";
+        } else if (extension.equals("tiff") || extension.equals("tif")) {
+            mimeType = "image/tiff";
+        } else if (extension.equals("ico")) {
+            mimeType = "image/x-icon";
+        } else if (extension.equals("svg")) {
+            mimeType = "image/svg+xml";
+        } else if (extension.equals("webp")) {
+            mimeType = "image/webp";
+        } else {
+            mimeType = "image/png";
+        }
+
+        /*mimeType = switch (extension) {
             case "jpg", "jpeg" -> "image/jpeg";
             case "gif" -> "image/gif";
             case "bmp" -> "image/bmp";
@@ -63,7 +101,7 @@ public class ImageUtils {
             case "svg" -> "image/svg+xml";
             case "webp" -> "image/webp";
             default -> "image/png";
-        };
+        };*/
         return mimeType;
     }
 
