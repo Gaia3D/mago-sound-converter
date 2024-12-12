@@ -267,16 +267,76 @@ public class SoundDataConverter {
 
             int Ntype = stream.readInt();
             for (int i = 0; i < Ntype; i++) {
-                int Itype = stream.readInt();
-                switch (Itype) {
-                    case 21001: {
-                        DataTypePlan resultDataTypePlan = new DataTypePlan();
-                        resultDataTypePlan.fileName = fileName;
-                        parseCase_4_1_1(stream, resultDataTypePlan);
-                        if (resultDataTypePlan.num_Node > 0) {
-                            resultDataTypePlan.convertData(inputCrs);
+                if (stream.available() > 0) {
+                    int Itype = stream.readInt();
+                    switch (Itype) {
+                        case 21001: {
+                            DataTypePlan resultDataTypePlan = new DataTypePlan();
+                            resultDataTypePlan.fileName = fileName;
+                            parseCase_4_1_1(stream, resultDataTypePlan);
+                            if (resultDataTypePlan.num_Node > 0) {
+                                resultDataTypePlan.convertData(inputCrs);
 
-                            String jsonFileName = "Type_2_Res_Plan_Day.json";
+                                String jsonFileName = "Type_2_Res_Plan_Day.json";
+                                if (MapITypeVecJsonFileNames.containsKey(Itype)) {
+                                    ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
+                                    vecJsonFileNames.add(jsonFileName);
+                                } else {
+                                    ArrayList<String> vecJsonFileNames = new ArrayList<>();
+                                    vecJsonFileNames.add(jsonFileName);
+                                    MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
+                                }
+
+                                String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
+                                resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
+
+                                // GLB.************************************************************
+                                String glbFileName = "Type_2_Res_Plan_Day.glb";
+                                String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
+                                resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
+                                // End Glb.--------------------------------------------------------
+                            } else {
+                                log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                            }
+                            break;
+                        }
+                        case 21002: {
+                            DataTypePlan resultDataTypePlan = new DataTypePlan();
+                            resultDataTypePlan.fileName = fileName;
+                            parseCase_4_1_1(stream, resultDataTypePlan);
+                            if (resultDataTypePlan.num_Node > 0) {
+                                resultDataTypePlan.convertData(inputCrs);
+
+                                String jsonFileName = "Type_2_Res_Plan_Night.json";
+                                if (MapITypeVecJsonFileNames.containsKey(Itype)) {
+                                    ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
+                                    vecJsonFileNames.add(jsonFileName);
+                                } else {
+                                    ArrayList<String> vecJsonFileNames = new ArrayList<>();
+                                    vecJsonFileNames.add(jsonFileName);
+                                    MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
+                                }
+
+                                String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
+                                resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
+
+                                // GLB.************************************************************
+                                String glbFileName = "Type_2_Res_Plan_Night.glb";
+                                String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
+                                resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
+                                // End Glb.--------------------------------------------------------
+                            } else {
+                                log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                            }
+                            break;
+                        }
+                        case 21003: {
+                            DataTypeFacade resultDataTypeFacade = new DataTypeFacade();
+                            resultDataTypeFacade.fileName = fileName;
+                            parseCase_4_1_2(stream, resultDataTypeFacade);
+                            resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
+
+                            String jsonFileName = "Type_2_Res_Facade_Day.json";
                             if (MapITypeVecJsonFileNames.containsKey(Itype)) {
                                 ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
                                 vecJsonFileNames.add(jsonFileName);
@@ -287,26 +347,22 @@ public class SoundDataConverter {
                             }
 
                             String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
-                            resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
+                            resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
 
                             // GLB.************************************************************
-                            String glbFileName = "Type_2_Res_Plan_Day.glb";
+                            String glbFileName = "Type_2_Res_Facade_Day.glb";
                             String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
-                            resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
+                            resultDataTypeFacade.writeToGlbFile(outputGltfFilePath); // new.***
                             // End Glb.--------------------------------------------------------
-                        } else {
-                            log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                            break;
                         }
-                        break;
-                    }
-                    case 21002: {
-                        DataTypePlan resultDataTypePlan = new DataTypePlan();
-                        resultDataTypePlan.fileName = fileName;
-                        parseCase_4_1_1(stream, resultDataTypePlan);
-                        if (resultDataTypePlan.num_Node > 0) {
-                            resultDataTypePlan.convertData(inputCrs);
+                        case 21004: {
+                            DataTypeFacade resultDataTypeFacade = new DataTypeFacade();
+                            resultDataTypeFacade.fileName = fileName;
+                            parseCase_4_1_2(stream, resultDataTypeFacade);
+                            resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
 
-                            String jsonFileName = "Type_2_Res_Plan_Night.json";
+                            String jsonFileName = "Type_2_Res_Facade_Night.json";
                             if (MapITypeVecJsonFileNames.containsKey(Itype)) {
                                 ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
                                 vecJsonFileNames.add(jsonFileName);
@@ -317,125 +373,69 @@ public class SoundDataConverter {
                             }
 
                             String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
-                            resultDataTypePlan.writeToJsonFile(outputJsonFilePath);
+                            resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
 
                             // GLB.************************************************************
-                            String glbFileName = "Type_2_Res_Plan_Night.glb";
+                            String glbFileName = "Type_2_Res_Facade_Night.glb";
                             String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
-                            resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
+                            resultDataTypeFacade.writeToGlbFile(outputGltfFilePath); // new.***
                             // End Glb.--------------------------------------------------------
-                        } else {
+
+                            break;
+                        }
+                        case 22001:
+                        case 22002:
+                        case 22003:
+                        case 22004:
+                        case 22005:
+                        case 22006: {
+                            String jsonFileName = "noName";
+                            if (Itype == 22001) {
+                                jsonFileName = "Type_2_Res_Stable_Facility_Ext_RD_Day.json";
+                            } else if (Itype == 22002) {
+                                jsonFileName = "Type_2_Res_Stable_Facility_Ext_RD_Night.json";
+                            } else if (Itype == 22003) {
+                                jsonFileName = "Type_2_Res_Stable_Facility_Ext_TN_Day.json";
+                            } else if (Itype == 22004) {
+                                jsonFileName = "Type_2_Res_Stable_Facility_Ext_TN_Night.json";
+                            } else if (Itype == 22005) {
+                                jsonFileName = "Type_2_Res_Stable_Facility_Int_RD_Day.json";
+                            } else if (Itype == 22006) {
+                                jsonFileName = "Type_2_Res_Stable_Facility_Int_RD_Night.json";
+                            }
+
+                            DataTypeStableFacility resultDataTypeStableFacility = new DataTypeStableFacility();
+                            parseCase_4_1_3(stream, resultDataTypeStableFacility);
+
+                            String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
+                            resultDataTypeStableFacility.writeToJsonFile(outputJsonFilePath);
+                            break;
+                        }
+                        case 22007:
+                        case 22008:
+                        case 23001:
+                        case 23002:
+                        case 23003:
+                        case 23004:
+                        case 29001:
+                        case 29002:
+                        case 29003:
+                        case 29004:
+                        case 29005:
+                        case 29006:
+                        case 29007:
+                            break;
+                        default: {
                             log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
+                            //throw new RuntimeException("Itype = " + Itype + ", iteration = " + i);
+                            break;
                         }
-                        break;
-                    }
-                    case 21003: {
-                        DataTypeFacade resultDataTypeFacade = new DataTypeFacade();
-                        resultDataTypeFacade.fileName = fileName;
-                        parseCase_4_1_2(stream, resultDataTypeFacade);
-                        resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
-
-                        String jsonFileName = "Type_2_Res_Facade_Day.json";
-                        if (MapITypeVecJsonFileNames.containsKey(Itype)) {
-                            ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
-                            vecJsonFileNames.add(jsonFileName);
-                        } else {
-                            ArrayList<String> vecJsonFileNames = new ArrayList<>();
-                            vecJsonFileNames.add(jsonFileName);
-                            MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
-                        }
-
-                        String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
-                        resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
-
-                        // GLB.************************************************************
-                        String glbFileName = "Type_2_Res_Facade_Day.glb";
-                        String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
-                        resultDataTypeFacade.writeToGlbFile(outputGltfFilePath); // new.***
-                        // End Glb.--------------------------------------------------------
-                        break;
-                    }
-                    case 21004: {
-                        DataTypeFacade resultDataTypeFacade = new DataTypeFacade();
-                        resultDataTypeFacade.fileName = fileName;
-                        parseCase_4_1_2(stream, resultDataTypeFacade);
-                        resultDataTypeFacade.convertData(inputCrs); // here joins all dataTypePlanList to one dataTypePlan.***
-
-                        String jsonFileName = "Type_2_Res_Facade_Night.json";
-                        if (MapITypeVecJsonFileNames.containsKey(Itype)) {
-                            ArrayList<String> vecJsonFileNames = MapITypeVecJsonFileNames.get(Itype);
-                            vecJsonFileNames.add(jsonFileName);
-                        } else {
-                            ArrayList<String> vecJsonFileNames = new ArrayList<>();
-                            vecJsonFileNames.add(jsonFileName);
-                            MapITypeVecJsonFileNames.put(Itype, vecJsonFileNames);
-                        }
-
-                        String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
-                        resultDataTypeFacade.writeToJsonFile(outputJsonFilePath);
-
-                        // GLB.************************************************************
-                        String glbFileName = "Type_2_Res_Facade_Night.glb";
-                        String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
-                        resultDataTypeFacade.writeToGlbFile(outputGltfFilePath); // new.***
-                        // End Glb.--------------------------------------------------------
-
-                        break;
-                    }
-                    case 22001:
-                    case 22002:
-                    case 22003:
-                    case 22004:
-                    case 22005:
-                    case 22006: {
-                        String jsonFileName = "noName";
-                        if (Itype == 22001) {
-                            jsonFileName = "Type_2_Res_Stable_Facility_Ext_RD_Day.json";
-                        } else if (Itype == 22002) {
-                            jsonFileName = "Type_2_Res_Stable_Facility_Ext_RD_Night.json";
-                        } else if (Itype == 22003) {
-                            jsonFileName = "Type_2_Res_Stable_Facility_Ext_TN_Day.json";
-                        } else if (Itype == 22004) {
-                            jsonFileName = "Type_2_Res_Stable_Facility_Ext_TN_Night.json";
-                        } else if (Itype == 22005) {
-                            jsonFileName = "Type_2_Res_Stable_Facility_Int_RD_Day.json";
-                        } else if (Itype == 22006) {
-                            jsonFileName = "Type_2_Res_Stable_Facility_Int_RD_Night.json";
-                        }
-
-                        DataTypeStableFacility resultDataTypeStableFacility = new DataTypeStableFacility();
-                        parseCase_4_1_3(stream, resultDataTypeStableFacility);
-
-                        String outputJsonFilePath = outputFolderPath + File.separator + jsonFileName;
-                        resultDataTypeStableFacility.writeToJsonFile(outputJsonFilePath);
-                        break;
-                    }
-                    case 22007:
-                    case 22008:
-                    case 23001:
-                    case 23002:
-                    case 23003:
-                    case 23004:
-                    case 29001:
-                    case 29002:
-                    case 29003:
-                    case 29004:
-                    case 29005:
-                    case 29006:
-                    case 29007:
-                        break;
-                    default: {
-                        log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
-                        //throw new RuntimeException("Itype = " + Itype + ", iteration = " + i);
-                        break;
                     }
                 }
             }
-
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            log.error("", ex);
         }
-
     }
 
     private void parseCase_4_1_1(LittleEndianDataInputStream stream, DataTypePlan resultDataTypePlan) throws IOException {

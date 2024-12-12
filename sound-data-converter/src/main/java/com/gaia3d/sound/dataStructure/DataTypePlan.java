@@ -171,6 +171,11 @@ public class DataTypePlan {
         GaiaNode node = new GaiaNode();
         rootNode.getChildren().add(node);
 
+        // Y-Up-Axis to Z-Up-Axis
+        Matrix4d transformMatrix = node.getTransformMatrix();
+        transformMatrix.rotateX(Math.toRadians(-90));
+        node.setTransformMatrix(transformMatrix);
+
         GaiaMesh mesh = new GaiaMesh();
         node.getMeshes().add(mesh);
 
