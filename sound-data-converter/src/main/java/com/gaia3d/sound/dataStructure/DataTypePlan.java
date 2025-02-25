@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gaia3d.basic.structure.*;
+import com.gaia3d.sound.converter.JacksonKmlReader;
+import com.gaia3d.sound.converter.JacksonKmlWriter;
 import com.gaia3d.sound.geometry.BoundingBox;
 import com.gaia3d.sound.globe.Globe;
 import com.gaia3d.sound.jgltf.GltfWriter;
@@ -237,6 +239,11 @@ public class DataTypePlan {
         GaiaScene gaiaScene = getGaiaScene();
         GltfWriter gltfWriter = new GltfWriter();
         gltfWriter.writeGlb(gaiaScene, glbFilePath);
+    }
+
+    public void writeToKmlFile(String kmlFilePath, String glbFilePath) throws IOException {
+        JacksonKmlWriter jacksonKmlWriter = new JacksonKmlWriter();
+        jacksonKmlWriter.write(new File(kmlFilePath), new File(glbFilePath), centerGeoCoords);
     }
 
     public void writeToJsonFile(String jsonFilePath) throws IOException {

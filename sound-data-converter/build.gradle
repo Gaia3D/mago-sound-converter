@@ -36,6 +36,7 @@ jar {
         }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    destinationDirectory.set(file("${projectDir}/dist"))
 }
 
 shadowJar {
@@ -53,6 +54,7 @@ shadowJar {
     from sourceSets.main.runtimeClasspath
     configurations = [project.configurations.runtimeClasspath]
     archiveFileName = "sound-data-converter-${project.version}-shadow.jar"
+    destinationDirectory.set(file("${projectDir}/dist"))
 }
 
 dependencies {
@@ -76,6 +78,7 @@ dependencies {
 
     implementation('com.fasterxml.jackson.core:jackson-databind:2.12.7.1')
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.0-rc2")
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2'
 
     // lwjgl (lightweight java game library)
     /*implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")

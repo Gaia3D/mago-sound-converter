@@ -42,8 +42,7 @@ public class SoundDataConverter {
             //String rawFileName = StringModifier.getRawFileName(fileName);
             log.info("fileName = " + fileName);
 
-
-            String inputFilePath = inputFolderPath + "/" + fileName;
+            String inputFilePath = inputFolderPath + File.separator + fileName;
             //String outputFilePath = outputFolderPath + "/" + rawFileName + ".json";
             try {
                 convertData(inputFilePath, outputFolderPath);
@@ -294,6 +293,10 @@ public class SoundDataConverter {
                                 String glbFileName = "Type_2_Res_Plan_Day.glb";
                                 String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
                                 resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
+
+                                String kmlFileName = "Type_2_Res_Plan_Day.kml";
+                                String outputKmlFilePath = outputFolderPath + File.separator + kmlFileName;
+                                resultDataTypePlan.writeToKmlFile(outputKmlFilePath, outputGltfFilePath); // new.***
                                 // End Glb.--------------------------------------------------------
                             } else {
                                 log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
@@ -324,6 +327,10 @@ public class SoundDataConverter {
                                 String glbFileName = "Type_2_Res_Plan_Night.glb";
                                 String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
                                 resultDataTypePlan.writeToGlbFile(outputGltfFilePath); // new.***
+
+                                String kmlFileName = "Type_2_Res_Plan_Night.kml";
+                                String outputKmlFilePath = outputFolderPath + File.separator + kmlFileName;
+                                resultDataTypePlan.writeToKmlFile(outputKmlFilePath, outputGltfFilePath); // new.***
                                 // End Glb.--------------------------------------------------------
                             } else {
                                 log.info("RuntimeException : Itype = " + Itype + ", iteration = " + i);
@@ -353,6 +360,10 @@ public class SoundDataConverter {
                             String glbFileName = "Type_2_Res_Facade_Day.glb";
                             String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
                             resultDataTypeFacade.writeToGlbFile(outputGltfFilePath); // new.***
+
+                            String kmlFileName = "Type_2_Res_Facade_Day.kml";
+                            String outputKmlFilePath = outputFolderPath + File.separator + kmlFileName;
+                            resultDataTypeFacade.writeToKmlFile(outputKmlFilePath, outputGltfFilePath); // new.***
                             // End Glb.--------------------------------------------------------
                             break;
                         }
@@ -379,6 +390,10 @@ public class SoundDataConverter {
                             String glbFileName = "Type_2_Res_Facade_Night.glb";
                             String outputGltfFilePath = outputFolderPath + File.separator + glbFileName;
                             resultDataTypeFacade.writeToGlbFile(outputGltfFilePath); // new.***
+
+                            String kmlFileName = "Type_2_Res_Facade_Night.kml";
+                            String outputKmlFilePath = outputFolderPath + File.separator + kmlFileName;
+                            resultDataTypeFacade.writeToKmlFile(outputKmlFilePath, outputGltfFilePath); // new.***
                             // End Glb.--------------------------------------------------------
 
                             break;

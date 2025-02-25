@@ -41,6 +41,10 @@ public class DataTypeFacade {
         totalDataTypePlan.writeToGlbFile(gltfFilePath);
     }
 
+    public void writeToKmlFile(String kmlPath, String glbPath) throws IOException {
+        totalDataTypePlan.writeToKmlFile(kmlPath, glbPath);
+    }
+
     public void writeToJsonFile(String jsonFilePath) throws IOException {
         totalDataTypePlan.writeToJsonFile(jsonFilePath);
     }

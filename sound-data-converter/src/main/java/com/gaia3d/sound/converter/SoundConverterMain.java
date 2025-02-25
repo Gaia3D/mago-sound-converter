@@ -20,22 +20,39 @@ public class SoundConverterMain {
 
         printStartMessage();
         Options options = new Options();
-        options.addOption("type", true, "conversion type");
         options.addOption("input", true, "input folder path");
         options.addOption("output", true, "output folder path");
-        options.addOption("inputProj", true, "input proj4 string");
+        options.addOption("type", true, "conversion type (SOUND_SIMULATION, RADIO_WAVE, INTERFERENCE)");
+        options.addOption("inputProj", true, "input proj4 string (default: EPSG:5186)");
+        options.addOption("help", false, "show help");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine commandLine = parser.parse(options, args);
 
         String type = commandLine.getOptionValue("type");
 
+        if (commandLine.hasOption("help")) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.setWidth(200);
+            formatter.printHelp("mago-sound-converter", options);
+            return;
+        }
+
         String inputFolderPath = commandLine.getOptionValue("input");
         String outputFolderPath = commandLine.getOptionValue("output");
+        if (inputFolderPath == null) {
+            log.error("Input folder path is not valid.");
+            return;
+        }
+        if (outputFolderPath == null) {
+            log.error("Output folder path is not valid.");
+            return;
+        }
+
         File inputPath = new File(inputFolderPath);
         File outputPath = new File(outputFolderPath);
 
-        if (inputFolderPath == null || inputFolderPath.isEmpty()) {
+        if (inputFolderPath.isEmpty() || !inputPath.isDirectory()) {
             log.error("Input folder path is not valid.");
             return;
         } else if (!inputPath.exists()) {
@@ -43,11 +60,9 @@ public class SoundConverterMain {
             return;
         }
 
-        if (outputFolderPath == null || outputFolderPath.isEmpty()) {
-            log.error("Output folder path is not valid.");
+        if (!outputPath.exists() && !outputPath.mkdirs()) {
+            log.error("Failed to create output folder.");
             return;
-        } else if (!outputPath.exists()) {
-            outputPath.mkdirs();
         }
 
         if (type.equals("SOUND_SIMULATION")) {
